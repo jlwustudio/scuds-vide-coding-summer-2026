@@ -445,7 +445,7 @@ hr {
   border-radius: 10px;
   padding: 15px 18px;
   margin: 20px 0;
-  border-left: 3px solid var(--line);
+  border: 1px dashed var(--line);
   background: var(--raised);
   font-size: .95rem;
 }
@@ -466,7 +466,6 @@ hr {
 /* 情境：每個實作開頭，說明為何做這題 */
 .callout.scenario {
   background: var(--clay-wash);
-  border-left-color: var(--clay);
 }
 
 .callout.scenario .callout-label {
@@ -475,7 +474,6 @@ hr {
 
 .callout.warn {
   background: var(--amber-wash);
-  border-left-color: var(--amber);
 }
 
 .callout.warn .callout-label {
@@ -484,7 +482,6 @@ hr {
 
 .callout.confirm {
   background: var(--sage-wash);
-  border-left-color: var(--sage);
 }
 
 .callout.confirm .callout-label {
@@ -493,16 +490,14 @@ hr {
 
 .callout.rescue {
   background: var(--raised);
-  border-left-color: var(--ink-faint);
 }
 
 .callout.rescue .callout-label {
-  color: var(--ink-faint);
+  color: var(--ink-soft);
 }
 
 .callout.tip {
   background: var(--raised);
-  border-left-color: var(--clay);
 }
 
 .callout.tip .callout-label {
@@ -650,19 +645,91 @@ code {
 }
 
 /* 提示詞區塊：學員要整段複製貼給 Claude 的 */
-pre.prompt {
+.prompt-wrapper {
+  margin: 1.5rem 0;
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--clay);
+  border-radius: var(--radius);
   background: var(--raised);
-  border-color: var(--clay);
-  border-left-width: 3px;
-  white-space: pre-wrap;
-  font-family: var(--sans);
-  font-size: .92rem;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
-pre.prompt code {
+.prompt-wrapper:hover {
+  box-shadow: var(--shadow-hover);
+  border-color: var(--clay-deep);
+}
+
+.prompt-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--clay-wash);
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--line-soft);
+  user-select: none;
+}
+
+.prompt-title {
+  font-family: var(--sans);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--clay-deep);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.prompt-copy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--raised);
+  border: 1px solid var(--clay);
+  color: var(--clay-deep);
+  font-family: var(--sans);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+}
+
+.prompt-copy-btn:hover {
+  background: var(--clay-wash);
+  color: var(--clay-deep);
+  transform: translateY(-1px);
+}
+
+.prompt-copy-btn:active {
+  transform: translateY(0);
+}
+
+.prompt-copy-btn.copied {
+  background: var(--sage-wash);
+  border-color: var(--sage);
+  color: var(--sage);
+}
+
+.prompt-wrapper pre.prompt {
+  margin: 0;
+  border: none;
+  background: none;
+  box-shadow: none;
+  padding: 16px;
+  font-family: var(--sans);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--ink);
+}
+
+.prompt-wrapper pre.prompt code {
   font-family: var(--sans);
   white-space: pre-wrap;
 }
+
 
 .copy-btn {
   position: absolute;

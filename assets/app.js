@@ -42,70 +42,142 @@
     document.querySelectorAll('pre').forEach(function (pre) {
       if (pre.dataset.nocopy !== undefined) return;
 
-      var btn = document.createElement('button');
-      btn.className = 'copy-btn';
-      btn.type = 'button';
-      btn.textContent = '複製';
-      btn.setAttribute('aria-label', '複製這段內容');
+      if (pre.classList.contains('prompt')) {
+        // 1. 建立 wrapper
+        var wrapper = document.createElement('div');
+        wrapper.className = 'prompt-wrapper';
 
-      btn.addEventListener('click', function () {
-        // 只複製目前 OS 看得到的行，免得 mac 的人複製到 Windows 指令
-        var code = pre.querySelector('code') || pre;
-        var lines = code.querySelectorAll('.os-line');
-        var text;
-        if (lines.length) {
-          text = Array.prototype.filter.call(lines, function (el) {
-            return el.offsetParent !== null;
-          }).map(function (el) { return el.textContent; }).join('\n');
-        } else {
-          text = code.innerText;
-        }
+        // 2. 建立 header
+        var header = document.createElement('div');
+        header.className = 'prompt-header';
 
-        var textToCopy = text.trim();
+        // 3. 建立標題
+        var title = document.createElement('span');
+        title.className = 'prompt-title';
+        title.innerHTML = '💡 Claude 提示詞';
 
-        function showSuccess() {
-          btn.textContent = '已複製！';
-          btn.classList.add('copied');
-          setTimeout(function () {
-            btn.textContent = '複製';
-            btn.classList.remove('copied');
-          }, 1800);
-        }
+        // 4. 建立複製按鈕
+        var btn = document.createElement('button');
+        btn.className = 'prompt-copy-btn';
+        btn.type = 'button';
+        btn.innerHTML = '📋 複製提示詞';
+        btn.setAttribute('aria-label', '複製這段提示詞');
 
-        function showError() {
-          btn.textContent = '複製失敗';
-          setTimeout(function () { btn.textContent = '複製'; }, 1800);
-        }
+        btn.addEventListener('click', function () {
+          var code = pre.querySelector('code') || pre;
+          var textToCopy = code.innerText.trim();
 
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(textToCopy).then(showSuccess).catch(showError);
-        } else {
-          // Fallback for non-secure contexts (e.g., HTTP via local network IP)
-          try {
-            var textArea = document.createElement('textarea');
-            textArea.value = textToCopy;
-            // Prevent scrolling on mobile/safari
-            textArea.style.top = '0';
-            textArea.style.left = '0';
-            textArea.style.position = 'fixed';
-            textArea.style.opacity = '0';
-            document.body.appendChild(textArea);
-            textArea.focus();
-            textArea.select();
-            var successful = document.execCommand('copy');
-            document.body.removeChild(textArea);
-            if (successful) {
-              showSuccess();
-            } else {
+          function showSuccess() {
+            btn.innerHTML = '✅ 已複製！';
+            btn.classList.add('copied');
+            setTimeout(function () {
+              btn.innerHTML = '📋 複製提示詞';
+              btn.classList.remove('copied');
+            }, 1800);
+          }
+
+          function showError() {
+            btn.innerHTML = '❌ 複製失敗';
+            setTimeout(function () { btn.innerHTML = '📋 複製提示詞'; }, 1800);
+          }
+
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(textToCopy).then(showSuccess).catch(showError);
+          } else {
+            // Fallback for non-secure contexts
+            try {
+              var textArea = document.createElement('textarea');
+              textArea.value = textToCopy;
+              textArea.style.top = '0';
+              textArea.style.left = '0';
+              textArea.style.position = 'fixed';
+              textArea.style.opacity = '0';
+              document.body.appendChild(textArea);
+              textArea.focus();
+              textArea.select();
+              var successful = document.execCommand('copy');
+              document.body.removeChild(textArea);
+              if (successful) showSuccess();
+              else showError();
+            } catch (err) {
               showError();
             }
-          } catch (err) {
-            showError();
           }
-        }
-      });
+        });
 
-      pre.appendChild(btn);
+        header.appendChild(title);
+        header.appendChild(btn);
+
+        // 將 wrapper 插入到 pre 的位置，並把 pre 放進 wrapper
+        pre.parentNode.insertBefore(wrapper, pre);
+        wrapper.appendChild(header);
+        wrapper.appendChild(pre);
+      } else {
+        var btn = document.createElement('button');
+        btn.className = 'copy-btn';
+        btn.type = 'button';
+        btn.textContent = '複製';
+        btn.setAttribute('aria-label', '複製這段內容');
+
+        btn.addEventListener('click', function () {
+          // 只複製目前 OS 看得到的行，免得 mac 的人複製到 Windows 指令
+          var code = pre.querySelector('code') || pre;
+          var lines = code.querySelectorAll('.os-line');
+          var text;
+          if (lines.length) {
+            text = Array.prototype.filter.call(lines, function (el) {
+              return el.offsetParent !== null;
+            }).map(function (el) { return el.textContent; }).join('\n');
+          } else {
+            text = code.innerText;
+          }
+
+          var textToCopy = text.trim();
+
+          function showSuccess() {
+            btn.textContent = '已複製！';
+            btn.classList.add('copied');
+            setTimeout(function () {
+              btn.textContent = '複製';
+              btn.classList.remove('copied');
+            }, 1800);
+          }
+
+          function showError() {
+            btn.textContent = '複製失敗';
+            setTimeout(function () { btn.textContent = '複製'; }, 1800);
+          }
+
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(textToCopy).then(showSuccess).catch(showError);
+          } else {
+            // Fallback for non-secure contexts (e.g., HTTP via local network IP)
+            try {
+              var textArea = document.createElement('textarea');
+              textArea.value = textToCopy;
+              // Prevent scrolling on mobile/safari
+              textArea.style.top = '0';
+              textArea.style.left = '0';
+              textArea.style.position = 'fixed';
+              textArea.style.opacity = '0';
+              document.body.appendChild(textArea);
+              textArea.focus();
+              textArea.select();
+              var successful = document.execCommand('copy');
+              document.body.removeChild(textArea);
+              if (successful) {
+                showSuccess();
+              } else {
+                showError();
+              }
+            } catch (err) {
+              showError();
+            }
+          }
+        });
+
+        pre.appendChild(btn);
+      }
     });
   }
 
