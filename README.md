@@ -3,11 +3,10 @@
 東吳大學資料科學系 × SCU NLP Lab 暑期實作工作坊（2026/7/18–19）的靜態講義網站。
 
 
-> ⚠️ 工作坊結束後線上瀏覽連結將關閉，建議直接從 GitHub 下載本專案到本機瀏覽：
-> ```
-> git clone https://github.com/jlwustudio/scuds-vide-coding-summer-2026.git
-> ```
-> 或點擊右上角 **Code → Download ZIP** 下載。
+
+🌐 **工作坊期間線上瀏覽**：https://jlwustudio.github.io/scuds-vide-coding-summer-2026/
+
+> 工作坊結束後線上連結將關閉。屆時請從 GitHub 下載後直接用瀏覽器開啟 `index.html` 瀏覽，或 `git clone https://github.com/jlwustudio/scuds-vide-coding-summer-2026.git`。
 
 ---
 
