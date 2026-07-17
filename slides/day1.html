@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>投影片 — Vibe Coding 工作坊 Day 1</title>
+  <style>
+    :root {
+      --bg: #faf8f5;
+      --fg: #1f2430;
+      --muted: #6b7280;
+      --accent: #4f46e5;
+      --accent-soft: #eef2ff;
+      --card: #ffffff;
+      --border: #e5e7eb;
+      --code-bg: #f3f4f6;
+      --warn: #b45309;
+      --warn-soft: #fef3c7;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #14161c;
+        --fg: #e8eaf0;
+        --muted: #9ca3af;
+        --accent: #818cf8;
+        --accent-soft: #23263a;
+        --card: #1c1f29;
+        --border: #33374a;
+        --code-bg: #23263a;
+        --warn: #fbbf24;
+        --warn-soft: #3a2f14;
+      }
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      height: 100%;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      overflow: hidden;
+      font-family: "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", system-ui, sans-serif;
+    }
+
+    .slide {
+      display: none;
+      position: absolute;
+      inset: 0;
+      padding: 6vh 8vw;
+      flex-direction: column;
+      justify-content: center;
+      gap: 2.6vh;
+    }
+
+    .slide.active {
+      display: flex;
+    }
+
+    h1 {
+      font-size: clamp(40px, 6vw, 80px);
+      line-height: 1.25;
+    }
+
+    h2 {
+      font-size: clamp(30px, 4.2vw, 56px);
+      line-height: 1.3;
+      margin-bottom: 1vh;
+    }
+
+    h2 .kicker,
+    .kicker {
+      display: block;
+      font-size: clamp(16px, 1.6vw, 22px);
+      letter-spacing: .18em;
+      color: var(--accent);
+      font-weight: 700;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    p,
+    li {
+      font-size: clamp(18px, 2.2vw, 30px);
+      line-height: 1.6;
+    }
+
+    ul,
+    ol {
+      padding-left: 1.3em;
+      display: grid;
+      gap: 1vh;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    .accent {
+      color: var(--accent);
+    }
+
+    .big {
+      font-size: clamp(26px, 3.2vw, 44px);
+      line-height: 1.5;
+      font-weight: 600;
+    }
+
+    .center {
+      text-align: center;
+      align-items: center;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2.2vh 1.9vw;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, .05);
+    }
+
+    .cols {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2vw;
+      align-items: stretch;
+    }
+
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.8vh 1.4vw;
+      overflow-x: auto;
+      font-size: clamp(15px, 1.7vw, 23px);
+      line-height: 1.55;
+      font-family: "SF Mono", Menlo, Consolas, monospace;
+      white-space: pre-wrap;
+    }
+
+    code {
+      font-family: "SF Mono", Menlo, Consolas, monospace;
+      background: var(--code-bg);
+      border-radius: 6px;
+      padding: .1em .35em;
+      font-size: .92em;
+    }
+
+    pre code {
+      background: none;
+      padding: 0;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    th,
+    td {
+      border-bottom: 1px solid var(--border);
+      padding: 1vh 1vw;
+      text-align: left;
+      font-size: clamp(16px, 1.8vw, 24px);
+      line-height: 1.45;
+    }
+
+    th {
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .pill {
+      display: inline-block;
+      background: var(--accent-soft);
+      color: var(--accent);
+      border-radius: 999px;
+      padding: .25em .9em;
+      font-weight: 700;
+      font-size: clamp(15px, 1.5vw, 20px);
+      margin-bottom: 1vh;
+    }
+
+    .warnbox {
+      background: var(--warn-soft);
+      border-left: 5px solid var(--warn);
+      border-radius: 10px;
+      padding: 1.8vh 1.5vw;
+    }
+
+    .warnbox p {
+      color: var(--fg);
+    }
+
+    .section-num {
+      font-size: clamp(52px, 8vw, 120px);
+      font-weight: 800;
+      color: var(--accent);
+      opacity: .25;
+      line-height: 1;
+    }
+
+    .step {
+      background: var(--accent-soft);
+      border-radius: 10px;
+      padding: .3em .7em;
+      font-weight: 700;
+      color: var(--accent);
+      display: inline-block;
+      margin-right: .4em;
+    }
+
+    .progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 4px;
+      background: var(--accent);
+      width: 0;
+      transition: width .25s;
+      z-index: 10;
+    }
+
+    .counter {
+      position: fixed;
+      bottom: 14px;
+      right: 20px;
+      color: var(--muted);
+      font-size: 14px;
+      z-index: 10;
+    }
+
+    .hint {
+      position: fixed;
+      bottom: 14px;
+      left: 20px;
+      color: var(--muted);
+      font-size: 13px;
+      z-index: 10;
+    }
+
+    .flow {
+      display: flex;
+      gap: .8vw;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .flow .fstep {
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 700;
+      border-radius: 12px;
+      padding: 1.4vh 1.4vw;
+      font-size: clamp(17px, 2.1vw, 29px);
+    }
+
+    .flow .arr {
+      color: var(--muted);
+      font-size: clamp(19px, 2.3vw, 33px);
+    }
+
+    .tag {
+      font-size: clamp(13px, 1.2vw, 17px);
+      color: var(--muted);
+    }
+
+    /* Slide Logo styles */
+    .slide-logos {
+      display: inline-flex;
+      gap: 20px;
+      margin-top: 5vh;
+      align-items: center;
+      justify-content: center;
+      background: #faf8f5;
+      padding: 12px 24px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(43, 42, 39, 0.06);
+      border: 1px solid rgba(224, 221, 211, 0.5);
+    }
+
+    .slide-logo {
+      height: 76px;
+      width: auto;
+      border-radius: 6px;
+      object-fit: contain;
+      transition: transform 0.2s ease;
+    }
+
+    .slide-logo:hover {
+      transform: scale(1.06);
+    }
+
+    .mobile-nav {
+      display: none;
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 999px;
+      padding: 6px 12px;
+      gap: 20px;
+      z-index: 100;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .mobile-nav button {
+      background: none;
+      border: none;
+      color: var(--fg);
+      font-size: 20px;
+      cursor: pointer;
+      padding: 8px 16px;
+      border-radius: 999px;
+      transition: background 0.2s;
+    }
+
+    .mobile-nav button:active {
+      background: var(--accent-soft);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .mobile-nav {
+        background: rgba(0, 0, 0, 0.4);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+    }
+
+    /* 響應式手機版 RWD 優化 */
+    @media (max-width: 768px) {
+      .slide {
+        padding: 4vh 5vw;
+        justify-content: flex-start;
+        overflow-y: auto;
+      }
+
+      .cols {
+        grid-template-columns: 1fr;
+        gap: 3vh;
+      }
+
+      h1 {
+        font-size: clamp(28px, 8vw, 48px);
+      }
+
+      h2 {
+        font-size: clamp(22px, 6vw, 36px);
+      }
+
+      p,
+      li {
+        font-size: clamp(15px, 4vw, 20px);
+      }
+
+      pre {
+        font-size: clamp(12px, 3.5vw, 16px);
+        padding: 1.5vh 3vw;
+      }
+
+      th,
+      td {
+        font-size: clamp(13px, 3.5vw, 16px);
+        padding: 0.8vh 1.5vw;
+      }
+
+      .section-num {
+        font-size: clamp(40px, 12vw, 70px);
+      }
+
+      .flow .fstep {
+        font-size: clamp(14px, 4vw, 18px);
+        padding: 1vh 2vw;
+      }
+
+      .hint {
+        display: none;
+      }
+
+      .mobile-nav {
+        display: flex;
+      }
+
+      .slide-logos {
+        padding: 8px 16px;
+        gap: 12px;
+        margin-top: 3vh;
+      }
+
+      .slide-logo {
+        height: 54px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="progress" id="progress"></div>
+  <div class="counter" id="counter"></div>
+  <div class="hint">← → 翻頁 ｜ F 全螢幕</div>
+
+  <!-- 1 標題 -->
+  <section class="slide center">
+    <span class="pill">暑期實作工作坊</span>
+    <h1>Vibe Coding 實作<br>Day 1：從零開始</h1>
+    <p class="muted">7/18（六）09:00–12:00 ｜ 工具：claude.ai（Claude Pro）</p>
+    <div class="slide-logos">
+      <img src="../assets/bigdata_logo.png" alt="東吳資科" class="slide-logo">
+      <img src="../assets/nlp_logo.png" alt="NLP Lab" class="slide-logo">
+    </div>
+  </section>
+
+  <!-- 2 課程地圖 -->
+  <section class="slide">
+    <h2><span class="kicker">兩天課程地圖</span>我們要去哪裡</h2>
+    <div class="cols">
+      <div class="card">
+        <p class="accent big">Day 1｜claude.ai 網頁版</p>
+        <ul>
+          <li>AI 是什麼（零基礎打底）</li>
+          <li>① 第一個對話 + 番茄鐘 (used 7%)</li>
+          <li>② PTCF + 統計模擬器 (used 30%)</li>
+          <li>③ 髒資料搜查 (used 8%)</li>
+          <li>④ 資料分析 + 儀表板 (used 20%)</li>
+        </ul>
+      </div>
+      <div class="card">
+        <p class="accent big">Day 2｜Claude Code</p>
+        <ul>
+          <li>把 AI 搬進你的電腦</li>
+          <li>① 第一次用 Claude Code</li>
+          <li>② 專案骨架 + 家規檔</li>
+          <li>③ 生成儀表板專案</li>
+          <li>④ Mini Hackathon</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 Day1 目標 -->
+  <section class="slide">
+    <h2><span class="kicker">Day 1 目標</span>今天結束時，你會…</h2>
+    <ul>
+      <li>搞懂 AI 是什麼、怎麼跟它<b>把話講清楚</b></li>
+      <li>親手做出<b>第一個能動的小工具</b>（一行程式都不用寫）</li>
+      <li>讓 AI 分析 <b>16,390 筆真實資料</b>並產出主管儀表板</li>
+      <li>學會<b>驗收 AI 的產出</b> — 它會犯錯，把關的是你</li>
+    </ul>
+  </section>
+
+  <!-- 4 定調 -->
+  <section class="slide center">
+    <h2><span class="kicker">先講最重要的一句</span></h2>
+    <p class="big">今天你<span class="accent">不用會寫程式</span>。<br>你只要會「說清楚你要什麼」。</p>
+    <p class="muted">沒碰過 AI 完全沒關係。每一步講義都有，卡住就舉手。</p>
+  </section>
+
+  <!-- 5 怎麼上這堂課 -->
+  <section class="slide">
+    <h2><span class="kicker">怎麼上這堂課</span>每個人做自己的，卡住就喊</h2>
+    <div class="cols">
+      <div class="card">
+        <p class="accent big">🙋 卡住就舉手</p>
+        <ul>
+          <li>講師和助教會走過去</li>
+          <li>卡住是正常的，不是你的問題</li>
+        </ul>
+      </div>
+      <div class="card">
+        <p class="accent big">👀 也可以問旁邊</p>
+        <ul>
+          <li>同學做得比較快就直接問他</li>
+          <li>看別人的螢幕是最快的學法</li>
+        </ul>
+      </div>
+    </div>
+    <div class="warnbox">
+      <p><b>每題都有「低標」。</b>做完低標你就達標了 — 後面的加分題做不完，完全不影響你今天學到的東西。</p>
+    </div>
+  </section>
+
+  <!-- 6 概念A 標題 -->
+  <section class="slide center">
+    <div class="section-num">概念 A</div>
+    <h2>AI 到底是什麼？</h2>
+    <p class="muted">聽懂這幾分鐘，接下來一整天都會很順</p>
+  </section>
+
+  <!-- 7 LLM 是什麼 -->
+  <section class="slide">
+    <h2><span class="kicker">生成式 AI／大型語言模型</span>用一個比喻</h2>
+    <div class="card">
+      <p class="big">像一個讀過整個圖書館，擅長<span class="accent">「文字接龍」</span>的實習生。</p>
+    </div>
+    <ul>
+      <li>它讀過海量文字，核心是尋找接龍機率：你輸入<b>「床前明月光」</b>，它會接出<b>「疑是地上霜」</b></li>
+      <li>它並非像人類般具有真正的邏輯思考，而是利用統計規律拼湊出最像答案的文字</li>
+      <li>它反應極快、知識廣博，但由於只是機率接龍，<b>有時會接出不合邏輯的錯誤</b></li>
+    </ul>
+    <p class="muted">Claude 就是這樣一個文字接龍大師。</p>
+  </section>
+
+  <!-- 8 提示詞/對話/上下文 -->
+  <section class="slide">
+    <h2><span class="kicker">三個關鍵詞</span>今天會一直用到</h2>
+    <table style="font-size: clamp(15px, 1.7vw, 22px);">
+      <tr>
+        <th style="width: 25%;">詞</th>
+        <th>白話與實例</th>
+      </tr>
+      <tr>
+        <td><b>提示詞 Prompt</b></td>
+        <td>你打給 AI 的指令。像<b>託朋友買咖啡</b>：說「買杯咖啡」（模糊）容易買錯，說「大杯熱無糖拿鐵」（具體）才精準。</td>
+      </tr>
+      <tr>
+        <td><b>對話 / 上下文</b></td>
+        <td>同一個對話中它有記憶力。問「推薦台北咖啡廳」後說「那台中呢？」，它知道是指台中咖啡廳。</td>
+      </tr>
+      <tr>
+        <td><b>新對話</b></td>
+        <td>開啟新對話它就全忘了（換新實習生）。如果直接在新對話問「那台中呢？」，它會一頭霧水。<b>鬼打牆時必開新對話！</b></td>
+      </tr>
+    </table>
+  </section>
+
+  <!-- 9 模型 + 幻覺 -->
+  <section class="slide">
+    <h2><span class="kicker">模型 + 幻覺的警告</span></h2>
+    <div class="cols">
+      <div class="card" style="padding: 1.5vh 1.5vw;">
+        <p class="accent big">模型 Model (大腦版本)</p>
+        <p>如 <b>iPhone 的 Standard vs Pro</b>（資深顧問 Opus vs 敏捷助理 Sonnet）。今天實作與分析用 **Sonnet** 性價比最高且快速。</p>
+      </div>
+      <div class="card" style="border-color: var(--warn); padding: 1.5vh 1.5vw;">
+        <p class="big" style="color: var(--warn);">⚠️ 幻覺 Hallucination (編造事實)</p>
+        <p><b>「一臉正經地說瞎話」</b>。例如：叫它提供論文文獻，它會憑空捏造看似極度真實但根本不存在的期刊、作者與年份！</p>
+      </div>
+    </div>
+    <div class="warnbox" style="margin-top: 1vh;">
+      <p><b>碩士生必記規矩：AI 給的任何數字與文獻，你都要親自驗證，絕不能照單全收！</b></p>
+    </div>
+  </section>
+
+  <!-- 9.5 額度與 Token 消耗估計 -->
+  <section class="slide">
+    <h2><span class="kicker">用量限制</span>Pro 帳號額度與 Token 消耗估計</h2>
+    <p>目前 Pro 帳號使用 <b>Sonnet 5</b> 設有 5 小時滾動用量限制。以下為 Day 1 各實作預估消耗比例（以中度對話與修改為基準）：</p>
+    <div class="cols" style="gap: 1.5vw; margin-top: 2vh;">
+      <div class="card" style="padding: 1.5vh 1.5vw; flex: 1;">
+        <p class="accent big" style="font-size: 18px; margin-bottom: 0.5vh;">實作 ① & ②</p>
+        <ul style="font-size: 14px; gap: 0.5vh;">
+          <li><b>實作① 番茄鐘</b>：約消耗 <b style="color: var(--accent);">7%</b> 額度（對話少，難度低）</li>
+          <li><b>實作② 抽樣模擬器</b>：約消耗 <b style="color: var(--accent);">30%</b> 額度（多次迭代，程式較複雜）</li>
+        </ul>
+      </div>
+      <div class="card" style="padding: 1.5vh 1.5vw; flex: 1;">
+        <p class="accent big" style="font-size: 18px; margin-bottom: 0.5vh;">實作 ③ & ④</p>
+        <ul style="font-size: 14px; gap: 0.5vh;">
+          <li><b>實作③ 髒資料搜查</b>：約消耗 <b style="color: var(--accent);">8%</b> 額度（資料診斷，代碼生成）</li>
+          <li><b>實作④ 主管儀表板</b>：約消耗 <b style="color: var(--accent);">20%</b> 額度（清洗與互動圖表設計）</li>
+        </ul>
+      </div>
+    </div>
+    <div class="warnbox" style="margin-top: 1.5vh; padding: 1vh 1.5vw;">
+      <p style="font-size: 14px;">💡 <b>提示：</b>題目愈複雜、程式碼愈長、迭代對話愈多，消耗的 Token 與額度就會呈指數級上升。鬼打牆時請記得<b>開啟新對話</b>以節省額度！</p>
+    </div>
+  </section>
+
+  <!-- 10 Vibe Coding 的三大隱患 -->
+  <section class="slide">
+    <h2><span class="kicker">防禦性思維</span>Vibe Coding 的三大隱患與對策</h2>
+    <div class="cols">
+      <div class="card" style="padding: 1.5vh 1.5vw;">
+        <p class="accent big" style="font-size: 20px;">1. 記憶上限 (Token Limit)</p>
+        <p style="font-size: 15px; line-height: 1.45;">AI 有「上下文視窗」限制。當對話變長、程式碼變多時，AI 會開始<b>遺忘前文、胡言亂語或執行速度變慢</b>。</p>
+      </div>
+      <div class="card" style="padding: 1.5vh 1.5vw;">
+        <p class="accent big" style="font-size: 20px;">2. 幻覺與自圓其說</p>
+        <p style="font-size: 15px; line-height: 1.45;">如果你直接問 AI「你確定這個答案沒錯嗎？」，它為了使接龍順暢，通常會<b>瞎編看似合理的理由來欺騙你</b>。</p>
+      </div>
+    </div>
+    <div class="warnbox" style="margin-top: 1vh; padding: 1vh 1.5vw;">
+      <p style="font-size: 16px;">💡 <b>唯一對策 — 停損重開：</b>對話混亂或鬼打牆時，<b>立刻重開新對話</b>，將程式碼主體貼給它，並簡短交代『這是目前進度，我們繼續』。</p>
+    </div>
+  </section>
+
+  <!-- 10 Artifact + 介面 -->
+  <section class="slide">
+    <h2><span class="kicker">介面導覽</span>先在螢幕上找到這四個地方</h2>
+    <table>
+      <tr>
+        <th>功能</th>
+        <th>在哪裡</th>
+        <th>用途</th>
+      </tr>
+      <tr>
+        <td><b>模型選擇</b></td>
+        <td>輸入框旁下拉</td>
+        <td>今天固定選 Sonnet</td>
+      </tr>
+      <tr>
+        <td><b>輸入框</b></td>
+        <td>畫面中間</td>
+        <td>打提示詞的地方</td>
+      </tr>
+      <tr>
+        <td><b>Artifacts</b></td>
+        <td>對話右側</td>
+        <td>它生成的網頁／程式，即時預覽</td>
+      </tr>
+      <tr>
+        <td><b>➕ 上傳</b></td>
+        <td>輸入框旁</td>
+        <td>丟 CSV、圖片、文件給它</td>
+      </tr>
+    </table>
+    <p class="muted">跟著講師在自己螢幕上點一遍。找不到就舉手，或問旁邊的同學。</p>
+  </section>
+
+  <!-- 11 實作① 標題 -->
+  <section class="slide center">
+    <div class="section-num">實作 ①</div>
+    <h2>第一個對話 + 番茄鐘<span class="tag"> ｜ 信心題</span></h2>
+    <p class="muted">09:30–10:00 ｜ 輕鬆玩（預估消耗額度：7%）</p>
+  </section>
+
+  <!-- 12 實作① 步驟 -->
+  <section class="slide">
+    <h2><span class="kicker">實作① 信心題</span>番茄鐘工作站 — 5 輪迭代步驟</h2>
+    <div class="cols" style="gap: 1.5vw;">
+      <div class="card" style="padding: 1.2vh 1.2vw;">
+        <p class="accent big" style="font-size: 18px; margin-bottom: 0.5vh;">🔸 Round 1–3：起步與基本生成</p>
+        <ul style="font-size: 13.5px; gap: 0.4vh;">
+          <li><b>R1 自我介紹</b>：向 Claude Sonnet 問候體驗生成速度。</li>
+          <li><b>R2 追問脈絡</b>：追問具體例子（體驗前文對話記憶）。</li>
+          <li><b>R3 基礎番茄鐘</b>：輸入 prompt 生成基礎款計時器 HTML Artifact。</li>
+        </ul>
+      </div>
+      <div class="card" style="padding: 1.2vh 1.2vw;">
+        <p class="accent big" style="font-size: 18px; margin-bottom: 0.5vh;">🔸 Round 4–5：功能擴充與美化</p>
+        <ul style="font-size: 13.5px; gap: 0.4vh;">
+          <li><b>R4 休息與動畫</b>：增加「長短休息」切換按鈕，並加上圓形進度條動畫。</li>
+          <li><b>R5 音效與美化</b>：改為莫蘭迪色極簡風，時間到發出嗶嗶聲（Web Audio API）。</li>
+        </ul>
+      </div>
+    </div>
+    <div class="warnbox" style="margin-top: 1vh; padding: 1vh 1.5vw;">
+      <p style="font-size: 14px;">🎯 <b>Vibe Coding 心法：</b> 描述 ➔ 生成 ➔ 試用 ➔ 迭代。改壞了就描述問題請它修正（例如「暫停後時間會重設，請修正」）。</p>
+    </div>
+  </section>
+
+  <!-- 13 核心循環 -->
+  <section class="slide center">
+    <h2><span class="kicker">你剛剛做的事，有個名字</span>核心循環</h2>
+    <div class="flow">
+      <div class="fstep">描述</div>
+      <div class="arr">→</div>
+      <div class="fstep">生成</div>
+      <div class="arr">→</div>
+      <div class="fstep">試用</div>
+      <div class="arr">→</div>
+      <div class="fstep">迭代</div>
+      <div class="arr">↺</div>
+    </div>
+    <p class="muted">今天會重複很多次。卡住的循環就砍掉重開。</p>
+  </section>
+
+  <!-- 14 概念B PTCF -->
+  <section class="slide">
+    <h2><span class="kicker">概念 B</span>東西一複雜，就要 PTCF</h2>
+    <p>番茄鐘一句話就成功，因為它簡單。東西複雜時，講模糊它就猜錯。口訣幫你講清楚：</p>
+    <div class="cols">
+      <pre>❌ 爛提示詞
+幫我做一個丟硬幣的網頁</pre>
+      <pre>✅ PTCF 版
+你是互動教材設計師。做一個丟硬幣
+模擬器：可設次數（10/100/1000），
+動態畫正面比例收斂折線圖，標出
+理論值 0.5。單一 HTML、繁中。</pre>
+    </div>
+  </section>
+
+  <!-- 15 PTCF 表 -->
+  <section class="slide">
+    <h2><span class="kicker">PTCF</span>起手提示詞四元素（照著填空）</h2>
+    <table>
+      <tr>
+        <th>元素</th>
+        <th>說明</th>
+        <th>範例</th>
+      </tr>
+      <tr>
+        <td><b>P</b>ersona 角色</td>
+        <td>要它扮演誰</td>
+        <td>互動教材設計師</td>
+      </tr>
+      <tr>
+        <td><b>T</b>ask 任務</td>
+        <td>具體做什麼</td>
+        <td>丟硬幣模擬器＋收斂折線圖</td>
+      </tr>
+      <tr>
+        <td><b>C</b>ontext 脈絡</td>
+        <td>背景與限制</td>
+        <td>教學用、可設定次數</td>
+      </tr>
+      <tr>
+        <td><b>F</b>ormat 格式</td>
+        <td>產出形式</td>
+        <td>單一 HTML Artifact、繁中</td>
+      </tr>
+    </table>
+    <p class="muted">不用死記，講義有範例。心法：把 Claude 當「很強但剛到職的新同事」。</p>
+  </section>
+
+  <!-- 16 實作② 標題 -->
+  <section class="slide center">
+    <div class="section-num">實作 ②</div>
+    <h2>常態分佈抽樣模擬器<span class="tag"> ｜ 引導迭代</span></h2>
+    <p class="muted">10:00–10:30 ｜ 練習 PTCF 與多輪迭代（預估消耗額度：30%）</p>
+  </section>
+
+  <!-- 17 實作② 步驟 -->
+  <section class="slide">
+    <h2><span class="kicker">實作② 引導迭代</span>抽樣模擬器 — 5 輪迭代步驟</h2>
+    <div class="cols" style="gap: 1.5vw;">
+      <div class="card" style="padding: 1.2vh 1.2vw;">
+        <p class="accent big" style="font-size: 18px; margin-bottom: 0.5vh;">🔸 Round 1–3：模擬器與公式</p>
+        <ul style="font-size: 13.5px; gap: 0.4vh;">
+          <li><b>R1 建立模擬器</b>：複製講義中的 PTCF 起手提示詞，產出基本模擬直方圖。</li>
+          <li><b>R2 連續抽樣動畫</b>：增加球落下動畫與抽樣速度控制拉桿。</li>
+          <li><b>R3 統計公式比對</b>：顯示實測標準差與理論標準誤公式卡片。</li>
+        </ul>
+      </div>
+      <div class="card" style="padding: 1.2vh 1.2vw;">
+        <p class="accent big" style="font-size: 18px; margin-bottom: 0.5vh;">🔸 Round 4–5：數據導出與進階</p>
+        <ul style="font-size: 13.5px; gap: 0.4vh;">
+          <li><b>R4 匯出 CSV</b>：新增「匯出模擬結果」按鈕，打包抽樣均值下載。</li>
+          <li><b>R5 自訂偏態母體</b>：新增偏態拉桿，動態改變母體以觀察收斂條件。</li>
+        </ul>
+      </div>
+    </div>
+    <div class="warnbox" style="margin-top: 1vh; padding: 1vh 1.5vw;">
+      <p style="font-size: 14px;">💡 <b>迭代三法則：</b>① 一次只改一件事 ② 描述看到的錯誤現象，別猜程式碼哪裡錯 ③ 隨時可以請它「改回來」。</p>
+    </div>
+  </section>
+
+  <!-- 17 休息 -->
+  <section class="slide center">
+    <h2>☕ 休息 10 分鐘</h2>
+    <p class="muted">10:30–10:40 ｜ 帳號或裝置有狀況的，現在來找助教</p>
+  </section>
+
+  <!-- 18 概念C -->
+  <section class="slide center">
+    <div class="section-num">概念 C</div>
+    <h2>AI 會犯錯，資料要把關</h2>
+  </section>
+
+  <!-- 19 髒資料 -->
+  <section class="slide">
+    <h2><span class="kicker">殘酷事實</span>真實資料永遠是髒的</h2>
+    <p>老闆丟給你一份 16,390 筆的銷售資料。真實世界的資料<b>一定有</b>：</p>
+    <ul>
+      <li>漏填的欄位（缺值）</li>
+      <li>重複登錄的紀錄</li>
+      <li>打錯的數字（異常值）</li>
+      <li>同一個東西的不同寫法（台北／臺北）</li>
+    </ul>
+    <div class="warnbox">
+      <p><b>AI 分析再快，也可能把髒資料照單全收，算出漂亮但錯誤的結論。所以你的第一動作永遠是：先做資料品質檢查，別急著分析。</b></p>
+    </div>
+  </section>
+
+  <!-- 20 實作③ 標題 -->
+  <section class="slide center">
+    <div class="section-num">實作 ③</div>
+    <h2>髒資料搜查<span class="tag"> ｜ 組間競賽</span></h2>
+    <p class="muted">10:40–11:10 ｜ 資料品質診斷與檢查（預估消耗額度：8%）</p>
+  </section>
+
+  <!-- 21 實作③ 步驟 -->
+  <section class="slide">
+    <h2><span class="kicker">實作③ 髒資料搜查</span>診斷與大搜查 — 4 輪對話步驟</h2>
+    <div class="cols" style="gap: 1.5vw;">
+      <div class="card" style="padding: 1.2vh 1.2vw;">
+        <p class="accent big" style="font-size: 18px; margin-bottom: 0.5vh;">🔸 Round 1–2：自動診斷與模糊比對</p>
+        <ul style="font-size: 13.5px; gap: 0.4vh;">
+          <li><b>R1 上傳與品質檢查</b>：傳送雙 CSV，要求列出缺值、重複、異常等問題。</li>
+          <li><b>R2 模糊字串查找</b>：追問「城市」與「店名」的拼寫不一致（台北/臺北/Taipei）及受影響列數。</li>
+        </ul>
+      </div>
+      <div class="card" style="padding: 1.2vh 1.2vw;">
+        <p class="accent big" style="font-size: 18px; margin-bottom: 0.5vh;">🔸 Round 3–4：極端值與清洗 SOP</p>
+        <ul style="font-size: 13.5px; gap: 0.4vh;">
+          <li><b>R3 退貨與異常金額</b>：找出數量為負數的交易與金額異常過大的打字錯誤列。</li>
+          <li><b>R4 產出清理 SOP 與 Code</b>：請 AI 將所有問題整理成規章，並寫出對應 Pandas 程式碼。</li>
+        </ul>
+      </div>
+    </div>
+    <div class="warnbox" style="margin-top: 1vh; padding: 1vh 1.5vw;">
+      <p style="font-size: 14px;">⚠️ <b>真實資料永遠是髒的：</b>AI 分析速度再快，如果照單全收，結論就是錯的！先品質檢查，再分析。</p>
+    </div>
+  </section>
+
+  <!-- 21 概念D 三層驗證 -->
+  <section class="slide">
+    <h2><span class="kicker">概念 D</span>三層驗證法 — 分析的安全帶</h2>
+    <table>
+      <tr>
+        <th>層</th>
+        <th>做法</th>
+      </tr>
+      <tr>
+        <td><b>1. 問前防呆</b></td>
+        <td>提問就要求「附依據數字」「說明處理方式」</td>
+      </tr>
+      <tr>
+        <td><b>2. 抽查核算</b></td>
+        <td>挑 1–2 個關鍵數字，<b>開新對話</b>重算比對</td>
+      </tr>
+      <tr>
+        <td><b>3. 換腦複審</b></td>
+        <td>新對話貼結論：「請當魔鬼代言人挑毛病」</td>
+      </tr>
+    </table>
+    <p class="muted">為什麼開新對話？在原對話問「你確定嗎」，它傾向自圓其說。</p>
+  </section>
+
+  <!-- 22 實作④ 標題 -->
+  <section class="slide center">
+    <div class="section-num">實作 ④</div>
+    <h2>清理分析 + 主管儀表板<span class="tag"> ｜ 三層驗證</span></h2>
+    <p class="muted">11:10–11:30 ｜ 清理、分析並打造一頁式儀表板（預估消耗額度：20%）</p>
+  </section>
+
+  <!-- 23 實作④ 步驟 -->
+  <section class="slide">
+    <h2><span class="kicker">實作④ 三層驗證</span>清理分析 + 主管儀表板 — 5 輪步驟</h2>
+    <div class="cols" style="gap: 1.5vw;">
+      <div class="card" style="padding: 1.2vh 1.2vw;">
+        <p class="accent big" style="font-size: 18px; margin-bottom: 0.5vh;">🔸 Round 1–3：分析與初版 HTML</p>
+        <ul style="font-size: 13px; gap: 0.3vh;">
+          <li><b>R1 清洗分析</b>：分析營收趨勢、季節性、平日週末差異與坪效（附依據數字）。</li>
+          <li><b>R2 交叉核算</b>：開新對話重算單店（夢時代6月營收）比對是否一致（第二層驗證）。</li>
+          <li><b>R3 初版儀表板</b>：產生互動式 HTML 網頁，含指標卡與趨勢/佔比圖。</li>
+        </ul>
+      </div>
+      <div class="card" style="padding: 1.2vh 1.2vw;">
+        <p class="accent big" style="font-size: 18px; margin-bottom: 0.5vh;">🔸 Round 4–5：聯動篩選與決策報告</p>
+        <ul style="font-size: 13px; gap: 0.3vh;">
+          <li><b>R4 互動聯動</b>：加入門市下拉選單、月份按鈕與圖表資料動態聯動。</li>
+          <li><b>R5 建議與列印</b>：最下方加入 AI 門市優化戰略，並增加「匯出/列印 PDF」按鈕。</li>
+        </ul>
+      </div>
+    </div>
+    <div class="warnbox" style="margin-top: 1vh; padding: 1vh 1.5vw;">
+      <p style="font-size: 14px;">🔍 <b>第三層驗證（換腦複審）：</b> 完成後開新視窗把結論丟給 AI：「請擔任魔鬼代言人挑毛病」。</p>
+    </div>
+  </section>
+
+  <!-- 23 展示 -->
+  <section class="slide center">
+    <h2>📊 快速展示</h2>
+    <p class="big">2–3 組上台，各 30 秒</p>
+    <p class="muted">秀儀表板 + 說一個你們抓到的資料陷阱</p>
+  </section>
+
+  <!-- 24 追問 -->
+  <section class="slide">
+    <h2><span class="kicker">為什麼一直要你們追問</span>65% vs 40%</h2>
+    <div class="card">
+      <p class="big">Anthropic 2026 研究：對生成內容<b>會追問的學習者</b>理解度超過 <span class="accent">65%</span>；照單全收的不到 <span
+          class="accent">40%</span>。</p>
+    </div>
+    <p>🔍 <b>追問檢查點</b>：現在向 Claude 問 2 個「為什麼」，填進講義。<br><span class="muted">例：「為什麼用中位數處理異常值？」「bin 數怎麼決定的？」</span></p>
+  </section>
+
+  <!-- 24b 自由活動：Day2 題目發想 -->
+  <section class="slide">
+    <h2><span class="kicker">自由活動 ｜ 11:30–12:00</span>想一個你明天想做的題目 💡</h2>
+    <p>明天用 Claude Code 從零做出<b>能執行的小工具</b>。現在想一個<b>你自己想做</b>的題目，明天就拿它來實作！</p>
+    <div class="cols">
+      <div class="card" style="padding: 1.5vh 1.5vw;">
+        <p class="accent big" style="font-size: 20px;">想不到？往這些方向</p>
+        <ul style="font-size: 15px; gap: 0.4vh;">
+          <li>把重複的作業<b>自動化</b></li>
+          <li>把一堆資料<b>變成一張圖</b></li>
+          <li>把 Excel 流程<b>變成網頁</b></li>
+          <li>做一個<b>只有你需要</b>的小工具</li>
+        </ul>
+      </div>
+      <div class="card" style="padding: 1.5vh 1.5vw;">
+        <p class="accent big" style="font-size: 20px;">填題目發想表單 📝</p>
+        <p style="font-size: 15px;">掃 QR code / 開連結，寫下：題目名稱、做什麼、需要哪些功能。<b>寧小勿大</b> — 30 分鐘做得完的小工具最好。</p>
+      </div>
+    </div>
+    <div class="warnbox">
+      <p>🎯 老師會收集大家的題目，<b>明天挑幾個當全班一起做的示範案例</b>！你的點子有機會雀屏中選。想不到也沒關係，明天有 6 個備選題目。</p>
+    </div>
+  </section>
+
+  <!-- 25 行前作業 -->
+  <section class="slide">
+    <h2><span class="kicker">回家作業</span>Day 2 環境安裝（15 分鐘）</h2>
+    <p>明天用 <b>Claude Code</b> — 能直接讀寫你電腦檔案的 AI。有兩種裝法，<b>擇一即可</b>：</p>
+    <div class="cols">
+      <div class="card">
+        <p class="accent big" style="font-size: 20px;">🖥️ Desktop App（推薦）</p>
+        <p>下載 App、登入、點 <b>Code</b> 分頁。圖形介面，新手友善。Windows 需另裝 Git（GUI 安裝，約 3 分鐘）。</p>
+      </div>
+      <div class="card">
+        <p class="accent big" style="font-size: 20px;">⌨️ CLI（進階）</p>
+        <p>終端機貼一行指令安裝。習慣打字或已經裝過的同學適用。</p>
+      </div>
+    </div>
+    <ul>
+      <li>照<b>行前通知</b>選一種裝好，自檢清單依你選的方式勾選</li>
+      <li>卡關就<b>把錯誤訊息貼給 claude.ai 問</b> — 這就是 vibe coding</li>
+    </ul>
+    <div class="warnbox">
+      <p>📱 現在手機拍下講義最後一頁的自檢清單。明早 08:45 前到的人有助教一對一救援。</p>
+    </div>
+  </section>
+
+  <!-- 26 收尾 -->
+  <section class="slide center">
+    <h2>Day 1 完成 🎉</h2>
+    <p class="big">今天：對話就能出成品。<br>明天：<span class="accent">讓 AI 進你的電腦做專案。</span></p>
+    <p class="muted">7/19（日）09:00 見</p>
+  </section>
+
+  <div class="mobile-nav">
+    <button id="prev-btn">◀</button>
+    <button id="next-btn">▶</button>
+  </div>
+
+  <script>
+    const slides = [...document.querySelectorAll('.slide')];
+    let i = Math.min(parseInt(location.hash.slice(1)) || 0, slides.length - 1);
+    const progress = document.getElementById('progress');
+    const counter = document.getElementById('counter');
+    function show(n) {
+      i = Math.max(0, Math.min(n, slides.length - 1));
+      slides.forEach((s, k) => s.classList.toggle('active', k === i));
+      progress.style.width = ((i + 1) / slides.length * 100) + '%';
+      counter.textContent = (i + 1) + ' / ' + slides.length;
+      location.hash = i;
+    }
+    addEventListener('keydown', e => {
+      if (['ArrowRight', ' ', 'PageDown'].includes(e.key)) { e.preventDefault(); show(i + 1); }
+      else if (['ArrowLeft', 'PageUp'].includes(e.key)) { e.preventDefault(); show(i - 1); }
+      else if (e.key === 'Home') show(0);
+      else if (e.key === 'End') show(slides.length - 1);
+      else if (e.key.toLowerCase() === 'f') {
+        document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen();
+      }
+    });
+    addEventListener('click', e => {
+      // 僅在桌面版寬螢幕啟用點擊兩側翻頁，避免手機版點選或滑動時誤觸
+      if (innerWidth > 768) {
+        if (e.clientX > innerWidth * 2 / 3) show(i + 1);
+        else if (e.clientX < innerWidth / 3) show(i - 1);
+      }
+    });
+
+    // 行動端懸浮按鈕導覽
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    if (prevBtn) prevBtn.addEventListener('click', () => show(i - 1));
+    if (nextBtn) nextBtn.addEventListener('click', () => show(i + 1));
+
+    show(i);
+  </script>
+</body>
+
+</html>

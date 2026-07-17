@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>學員講義 — Vibe Coding 工作坊 Day 1 </title>
+  <meta name="description" content="Day 1：用 claude.ai 網頁版，從番茄鐘做到主管儀表板。四個實作的逐步操作與起手提示詞。">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+
+<body>
+
+  <header class="site-header">
+    <div class="inner">
+      <a class="brand" href="index.html">
+        <img src="assets/bigdata_logo.png" alt="東吳資科" class="header-logo">
+        <img src="assets/nlp_logo.png" alt="NLP Lab" class="header-logo">
+        Vibe Coding 工作坊
+        <small>7/18–19</small>
+      </a>
+      <nav class="site-nav">
+        <a href="index.html">首頁</a>
+        <a href="install.html">安裝指南</a>
+        <a href="day1.html" aria-current="page">Day 1 講義</a>
+        <a href="day2.html">Day 2 講義</a>
+        <a href="survey.html">題目發想</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <div class="hero">
+      <span class="kicker">Day 1 ・ 7/18（六）</span>
+      <h1>從零開始的 Vibe Coding</h1>
+      <p class="lede"><strong>完全沒碰過 AI 也沒關係。</strong>每一步都寫在這頁，跟著做就會。卡住就舉手。</p>
+      <div class="meta">
+        <span>🕘 09:00–12:00</span>
+        <span>🌐 工具：claude.ai 網頁版</span>
+        <span>✋ 卡住就舉手</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="page">
+
+    <aside class="toc">
+      <div class="toc-title">本頁目錄</div>
+      <ul>
+        <li><a href="#goals">今日目標</a></li>
+        <li><a href="#how">怎麼上這堂課</a></li>
+        <li><a href="#concepts">概念速記</a></li>
+        <li><a href="#lab1">實作①　番茄鐘</a></li>
+        <li><a href="#lab2">實作②　抽樣模擬器</a></li>
+        <li><a href="#lab3">實作③　髒資料搜查</a></li>
+        <li><a href="#lab4">實作④　主管儀表板</a></li>
+        <li><a href="#checkpoint">追問檢查點</a></li>
+        <li><a href="#freetime">自由活動</a></li>
+        <li><a href="#homework">回家作業</a></li>
+      </ul>
+    </aside>
+
+    <main>
+
+      <h2 id="goals">今日目標</h2>
+      <ol>
+        <li>搞懂 AI 是什麼、怎麼跟它<strong>說清楚</strong></li>
+        <li>親手做出你的第一個能動的小工具</li>
+        <li>讓 AI 分析真實資料、做出主管看的儀表板</li>
+        <li>學會<strong>驗收 AI 的產出</strong>——它會犯錯，把關的是你</li>
+      </ol>
+
+      <h2 id="how">怎麼上這堂課</h2>
+
+      <p><strong>每個人用自己的電腦，自己動手做一遍。</strong>不分組，四題都是你自己從頭走到尾。</p>
+      <ul>
+        <li><strong>卡住就舉手</strong>，講師和助教會過去看</li>
+        <li>旁邊同學做得比較快，<strong>直接問他</strong>也完全 OK——互相看螢幕是最快的學法</li>
+        <li>沒基礎的同學：把每題的<strong>信心題低標</strong>做出來就達標了，難的部分做不完很正常</li>
+      </ul>
+
+      <h2 id="concepts">📖 概念速記</h2>
+      <p class="muted small">聽完概念 A 之後回來對照。</p>
+
+      <div class="table-scroll">
+        <table>
+          <tr>
+            <th style="width:28%">名詞</th>
+            <th>白話</th>
+          </tr>
+          <tr>
+            <td><strong>生成式 AI／LLM</strong></td>
+            <td>讀過海量文字、很會「接下去」的 AI。像反應很快、知識很廣的實習生</td>
+          </tr>
+          <tr>
+            <td><strong>提示詞 Prompt</strong></td>
+            <td>你打給 AI 的話。講愈清楚，結果愈好</td>
+          </tr>
+          <tr>
+            <td><strong>對話／上下文</strong></td>
+            <td>同一個對話裡，AI 記得前面說過的話；開新對話它就忘了</td>
+          </tr>
+          <tr>
+            <td><strong>模型 Model</strong></td>
+            <td>AI 的「大腦版本」。今天用 <strong>Sonnet</strong>（夠聰明又快、省用量）</td>
+          </tr>
+          <tr>
+            <td><strong>Token 額度消耗</strong></td>
+            <td>目前使用 <strong>Sonnet 5</strong>（Pro 帳號每 5 小時有限制）。本頁各實作標有預估消耗百分比，方便學員評估不同題目的額度開銷</td>
+          </tr>
+          <tr>
+            <td><strong>幻覺 Hallucination</strong></td>
+            <td>AI 有時「很有自信地說錯話」。所以 → <strong>產出要驗收，不能照單全收</strong></td>
+          </tr>
+          <tr>
+            <td><strong>Artifact</strong></td>
+            <td>Claude 生成的網頁／程式，會在對話右側即時預覽</td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- ============ 實作 1 ============ -->
+      <h2 id="lab1">實作①（信心題）：第一個對話 + 番茄鐘工作站</h2>
+
+      <div class="callout confirm">
+        <span class="callout-label">📊 預估額度消耗</span>
+        <p>此實作全程約消耗 <strong>7%</strong> 額度（以 Sonnet 5 / 5 小時 Pro 中度使用限制為基準，難度低、對話少）。</p>
+      </div>
+
+      <div class="callout scenario">
+        <span class="callout-label">情境</span>
+        <p>為什麼第一題選番茄鐘？因為<strong>人人都懂它怎麼用</strong>，不用學新知識就能一眼判斷「AI 做對了沒」。</p>
+        <p>這題真正要練的是「講一句話 → AI 生出能動的東西 → 你再講一句話改」這個<strong>最基本的循環</strong>——之後不管做什麼題目，都是這個循環的延伸。</p>
+      </div>
+
+      <p><strong>目標</strong>：透過 5 輪漸進式對話，從零做出一個功能齊全、精美的專注番茄鐘網頁。</p>
+
+      <h3>🔸 Round 1 — 開始對話與問候</h3>
+      <ol>
+        <li>打開瀏覽器前往 <a href="https://claude.ai" target="_blank" rel="noopener">claude.ai</a>
+          並登入，確認選單中的<strong>模型</strong>為 <strong>Sonnet</strong>。</li>
+        <li>在輸入框輸入以下指令並送出：</li>
+      </ol>
+      <pre class="prompt"><code>你好，請用繁體中文簡單自我介紹，並舉三個你可以幫我做的事。</code></pre>
+      <div class="expect">👀 等待生成，觀察它的對答速度。<b>恭喜你完成了第一個對話！</b></div>
+
+      <h3>🔸 Round 2 — 追問脈絡（上下文體驗）</h3>
+      <p>在<strong>同一個對話視窗</strong>直接輸入追問，不需要重新解釋背景：</p>
+      <pre class="prompt"><code>第二點可以再具體一點，舉一個實際例子嗎？</code></pre>
+      <div class="callout tip">
+        <span class="callout-label">💡 觀察重點</span>
+        <p>AI 知道「第二點」指什麼，因為同一個對話會自動帶入<strong>上下文（Context）</strong>。如果你開新對話劈頭問這句，它會完全傻眼。</p>
+      </div>
+
+      <h3>🔸 Round 3 — 生成基礎番茄鐘（第一版 Artifact）</h3>
+      <pre class="prompt"><code>請幫我做一個番茄鐘計時器網頁：25 分鐘倒數，有開始、暫停、重設按鈕。單一 HTML，繁體中文介面，設計簡潔。</code></pre>
+      <ol>
+        <li>右側會自動展開 <strong>Artifact 預覽視窗</strong>（若沒有，點擊訊息底部的「番茄鐘計時器」卡片展開）。</li>
+        <li>在右側按 <strong>開始</strong>，測試倒數是否能跑。</li>
+      </ol>
+
+      <h3>🔸 Round 4 — 模式切換與動畫（第二版迭代）</h3>
+      <pre class="prompt"><code>請幫我修改網頁：
+1. 增加「短休息（5分鐘）」與「長休息（15分鐘）」按鈕，點擊可切換時長。
+2. 倒數時，畫面上加上一個圓環進度條（隨著剩餘時間減少而收縮）。</code></pre>
+      <div class="expect">👀 觀察右側 Artifact <b>自動重寫並更新</b>，試用新按鈕與進度條。</div>
+
+      <h3>🔸 Round 5 — 美化與網頁聲效（最終版）</h3>
+      <pre class="prompt"><code>請做最終美化：
+1. 將配色改為高質感的莫蘭迪色系極簡風，中央時間字體加大加粗。
+2. 當倒數到 00:00 時，網頁發出輕柔的響鈴聲（請使用 Web Audio API 動態合成音效，不需要外部音訊檔案）。</code></pre>
+      <div class="expect">🔔 更新後，按「開始」把時長調短測試，<b>確認時間到時會響起嗶嗶聲</b>！</div>
+
+      <div class="callout rescue">
+        <span class="callout-label">🆘 卡關排除</span>
+        <ul>
+          <li><strong>畫面不動</strong>：確認你按了 Enter 送出。</li>
+          <li><strong>沒出現網頁</strong>：手動點擊對話訊息內的 Artifact 卡片展開。</li>
+          <li><strong>功能有 Bug</strong>：直接打字告訴它現象，例如「按暫停再按開始時，時間會跳回 25 分鐘，請修正」。</li>
+        </ul>
+      </div>
+
+      <!-- ============ 實作 2 ============ -->
+      <h2 id="lab2">實作②：常態分佈抽樣模擬器（練習「把話講清楚」）</h2>
+
+      <div class="callout confirm">
+        <span class="callout-label">📊 預估額度消耗</span>
+        <p>此實作全程約消耗 <strong>30%</strong> 額度（以 Sonnet 5 / 5 小時 Pro 中度使用限制為基準，涉及複雜邏輯與多次追問迭代，消耗較大）。</p>
+      </div>
+
+      <div class="callout scenario">
+        <span class="callout-label">情境</span>
+        <p>這題把難度拉高一階——抽樣模擬器牽涉統計邏輯與動態視覺化，<strong>一句話講不清楚就會生錯</strong>。</p>
+        <p>想像你是統計課助教，想幫學弟妹做一個「<strong>看得到</strong>」中央極限定理如何運作的教學工具，而不是又一張公式投影片。這題練的是 PTCF：把角色、任務、脈絡、格式講清楚，AI 才接得準。</p>
+      </div>
+
+      <h3>先學概念 B — PTCF</h3>
+      <p>把提示詞寫清楚的四字口訣。不用死記，照著填空就好。</p>
+
+      <div class="table-scroll">
+        <table>
+          <tr>
+            <th style="width:22%">元素</th>
+            <th style="width:38%">說明</th>
+            <th>範例</th>
+          </tr>
+          <tr>
+            <td><strong>P</strong>ersona 角色</td>
+            <td>要 Claude 扮演誰</td>
+            <td>「你是資料視覺化工程師」</td>
+          </tr>
+          <tr>
+            <td><strong>T</strong>ask 任務</td>
+            <td>具體要做什麼</td>
+            <td>「做一個抽樣模擬器」</td>
+          </tr>
+          <tr>
+            <td><strong>C</strong>ontext 脈絡</td>
+            <td>背景、限制、給誰用</td>
+            <td>「統計課教學用，操作要直覺」</td>
+          </tr>
+          <tr>
+            <td><strong>F</strong>ormat 格式</td>
+            <td>產出形式</td>
+            <td>「單一 HTML Artifact，繁中」</td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="callout warn">
+        <span class="callout-label">⚠️ 對照組</span>
+        <p>爛提示詞長這樣：<code>幫我做一個丟硬幣的網頁</code>。下面的起手提示詞就是 PTCF 齊全的版本，感受一下差距。</p>
+      </div>
+
+      <h3>🔸 Round 1 — 建立基本模擬器（起手提示詞）</h3>
+      <p>開一個<strong>新對話</strong>，複製貼上以下符合 PTCF 規範的起手指令：</p>
+      <pre class="prompt"><code>你是資料視覺化教學工具工程師。請做一個「中央極限定理互動模擬器」：
+- 使用者可調整母體分佈（均勻分佈、指數分佈、雙峰分佈）、樣本數 n（1-100）、抽樣次數（10-1000）
+- 按下「開始抽樣」後，動態畫出樣本平均數的分佈直方圖
+- 顯示樣本平均數分佈的均值與標準誤，並疊上理論常態曲線
+- 做成單一 HTML Artifact，繁體中文介面，設計簡潔現代。</code></pre>
+
+      <h3>🔸 Round 2 — 逐步抽樣動畫與速度控制</h3>
+      <pre class="prompt"><code>請修改模擬器：
+1. 增加「單次模擬」與「連續模擬」按鈕。當點擊連續模擬時，以動畫形式「一顆一顆球落下」動態呈現樣本均值掉入直方圖的過程。
+2. 加上一個「動畫速度」控制拉桿（Slider），讓使用者可以調整球掉落的速度。</code></pre>
+
+      <h3>🔸 Round 3 — 理論比對與公式呈現</h3>
+      <pre class="prompt"><code>請在網頁底部加入統計比對區：
+1. 顯示「實測樣本平均數的標準差」與「理論標準誤（公式為：母體標準差 / 根號 n）」的對照數值。
+2. 以精美的數學公式卡片呈現上述公式，並在學員調整樣本數 n 時，動態展示分母的變化與結果的收斂過程。</code></pre>
+
+      <h3>🔸 Round 4 — 數據導出功能（CSV）</h3>
+      <pre class="prompt"><code>請在控制面板新增一個「匯出模擬結果」按鈕。點擊後，能將所有抽樣的平均數數值打包下載為名為 sampling_data.csv 的 CSV 檔案。</code></pre>
+
+      <h3>🔸 Round 5 — 母體分佈自訂調整（進階挑戰）</h3>
+      <pre class="prompt"><code>請在母體選擇區加上「自訂偏態母體」選項：
+- 當選擇自訂偏態時，下方出現一個「偏態係數（Skewness）」拉桿。
+- 調整此拉桿，能動態改變母體分佈的歪斜程度，藉此觀察高度偏態下，需要多大的樣本數 n 才能讓均值分佈趨近常態。</code></pre>
+
+      <div class="callout tip">
+        <span class="callout-label">💡 迭代三法則</span>
+        <ol>
+          <li><strong>一次只要求一件事</strong>——不然壞了不知道是誰害的</li>
+          <li>描述「<strong>你看到的問題</strong>」，而不是猜程式哪裡錯</li>
+          <li>改壞了就叫它改回來，或重開對話重來</li>
+        </ol>
+      </div>
+
+      <!-- ============ 實作 3 ============ -->
+      <h2 id="lab3">實作③：髒資料搜查（AI 分析要人工把關）</h2>
+
+      <div class="callout confirm">
+        <span class="callout-label">📊 預估額度消耗</span>
+        <p>此實作全程約消耗 <strong>8%</strong> 額度（以 Sonnet 5 / 5 小時 Pro 中度使用限制為基準，資料品質診斷與 SOP/Pandas 程式碼生成）。</p>
+      </div>
+
+      <div class="callout scenario">
+        <span class="callout-label">情境</span>
+        <p>前兩題練的是迭代對話，這題換成<strong>資料科學系學生真的會遇到的情境</strong>。</p>
+        <p>你是「山嵐咖啡」資料分析師，老闆丟給你上半年銷售資料（<code>sales_2026H1.csv</code>，16,390
+          筆）和門市資料（<code>stores.csv</code>），下午主管會議要重點洞察。<strong>拿到資料先別急著分析，得先確認資料乾不乾淨。</strong></p>
+      </div>
+
+      <p><strong>先記住概念 C</strong>：真實資料<strong>永遠是髒的</strong>（漏填、重複、打錯）。AI 會照單全收算出「漂亮但錯誤」的結論。所以 →
+        <strong>先做資料品質檢查，不要急著分析</strong>。</p>
+
+      <p>👉 還沒下載資料的人：<a href="data/">到資料集下載頁拿兩個 CSV</a>。</p>
+
+      <h3>🔸 Round 1 — 上傳資料與自動診斷</h3>
+      <ol>
+        <li>開一個<strong>新對話</strong>，點選 <strong>➕</strong> 上傳 <code>sales_2026H1.csv</code> 與 <code>stores.csv</code>。
+        </li>
+        <li>複製貼上起手提示詞：</li>
+      </ol>
+      <pre class="prompt"><code>你是零售業資深資料分析師。這是山嵐咖啡 2026 上半年的銷售明細與門市資料。
+請先做資料品質檢查：缺值、重複列、異常值、欄位值不一致等問題，一項一項列出來，並說明每個問題你建議怎麼處理。
+先不要做任何分析。</code></pre>
+
+      <h3>🔸 Round 2 — 深入模糊匹配與統計</h3>
+      <p>AI 列出問題後，進一步追問字串的不一致：</p>
+      <pre
+        class="prompt"><code>請檢查門市資料或銷售明細中的「城市」與「門市」欄位，有沒有拼寫不一致或同義詞（例如台北與臺北、簡繁混雜）的問題？如果有的話，分別影響了多少筆銷售明細紀錄？</code></pre>
+
+      <h3>🔸 Round 3 — 退貨與極端異常值追蹤</h3>
+      <pre class="prompt"><code>這份明細中似乎有「退貨交易」與「打字打錯的極端值」，請：
+1. 找出數量為負數的交易，這代表退貨嗎？分別是哪些產品？
+2. 檢查「單價」與「數量」兩個欄位的分布，找出明顯不合理的極端值（例如多打了幾個零）。列出這些交易明細，並說明它們的「金額」欄位有什麼特徵。
+3. 這些極端值如果不處理，會怎麼影響平均單價與總營收的計算？</code></pre>
+
+      <div class="callout tip">
+        <span class="callout-label">💡 觀察重點</span>
+        <p>極端值藏在 <code>單價</code> 和 <code>數量</code>，<strong>不在 <code>金額</code></strong>（金額最大只有 420）。注意看這些列的
+          <code>金額</code> 是什麼狀態——這會告訴你這批髒資料是怎麼產生的。</p>
+      </div>
+
+      <h3>🔸 Round 4 — 產出清洗規章與程式碼</h3>
+      <pre
+        class="prompt"><code>很好，請幫我彙整這四輪找到的所有髒資料問題，寫出一個結構化的「資料清理 SOP」。另外，請提供一段 Python Pandas 程式碼，展示如何實作這些清理動作。</code></pre>
+
+      <div class="callout rescue">
+        <span class="callout-label">🆘 上傳失敗</span>
+        <p>若課堂網路壅塞導致上傳失敗，先與鄰座成功上傳的同學共看，或舉手尋求助教一對一救援。</p>
+      </div>
+
+      <!-- ============ 實作 4 ============ -->
+      <h2 id="lab4">實作④：清理分析 + 主管儀表板</h2>
+
+      <div class="callout confirm">
+        <span class="callout-label">📊 預估額度消耗</span>
+        <p>此實作全程約消耗 <strong>20%</strong> 額度（以 Sonnet 5 / 5 小時 Pro 中度使用限制為基準，進行資料清理、多指標分析與一頁式網頁儀表板設計）。</p>
+      </div>
+
+      <div class="callout scenario">
+        <span class="callout-label">情境</span>
+        <p>延續實作③的山嵐咖啡分析師身份——資料已經抓出問題，現在要做的是<strong>真正拿給主管看的東西</strong>：有依據數字的商業洞察，加上一頁看得懂的儀表板。</p>
+        <p>這題順便練三層驗證法，因為「做出漂亮儀表板」跟「<strong>儀表板上的數字是對的</strong>」是兩件事，後者才是主管真正在乎的。</p>
+      </div>
+
+      <h3>先記住概念 D — 三層驗證法</h3>
+      <p>AI 分析的安全帶。這題每一層你都會實際做一次。</p>
+
+      <div class="table-scroll">
+        <table>
+          <tr>
+            <th style="width:20%">層</th>
+            <th style="width:44%">做法</th>
+            <th>這題怎麼練</th>
+          </tr>
+          <tr>
+            <td><strong>1. 問前防呆</strong></td>
+            <td>提問就要求「附依據數字」「說明處理方式」</td>
+            <td>Round 1 提示詞已內建</td>
+          </tr>
+          <tr>
+            <td><strong>2. 抽查核算</strong></td>
+            <td>挑 1–2 個數字，<strong>開新對話</strong>重算比對</td>
+            <td>Round 2 做一次</td>
+          </tr>
+          <tr>
+            <td><strong>3. 換腦複審</strong></td>
+            <td>新對話貼結論：「請當魔鬼代言人挑毛病」</td>
+            <td>Round 5 做一次</td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="callout warn">
+        <span class="callout-label">⚠️ 為什麼第二層要開新對話？</span>
+        <p>因為在原對話問「你確定嗎」，它會傾向<strong>自圓其說</strong>。換一個乾淨的對話重算，才是真的核對。</p>
+      </div>
+
+      <h3>🔸 Round 1 — 清理與分析營收指標</h3>
+      <p>在實作③的對話中，輸入清洗與分析的要求：</p>
+      <pre class="prompt"><code>請依你剛才建議的 SOP 清理資料，然後進行以下商務分析：
+1. 每個門市的各月營收趨勢，哪間門市成長最快？
+2. 產品組合是否有季節性（月份）變化特徵？
+3. 平日（週間）與週末的消費行為與客單價有何差異？
+4. 結合 stores.csv 中的坪數，計算各門市的「每坪月營收（坪效）」，哪間店坪效最好？
+請務必列出分析結果的具體依據數字。</code></pre>
+
+      <h3>🔸 Round 2 — 新對話交叉核算（第二層驗證）</h3>
+      <ol>
+        <li><strong>開一個全新對話</strong>，單獨上傳 <code>sales_2026H1.csv</code>，輸入：</li>
+      </ol>
+      <pre class="prompt"><code>請只計算「高雄夢時代店」2026 年 6 月的總營收，請列出你的計算算式。</code></pre>
+      <p>比對這個新對話算出的數字，是否與 Round 1 的分析一致。若不一致，回原對話追問：</p>
+      <pre class="prompt"><code>新對話算出夢時代 6 月營收是 XX，為何你剛才算 YY？是否在清理退貨或異常值時有邏輯差異？</code></pre>
+
+      <h3>🔸 Round 3 — 生成初版主管儀表板</h3>
+      <pre class="prompt"><code>請將上述分析結果做成一頁互動式 HTML 儀表板 Artifact：
+- 最上方放 4 張重點指標卡（總營收、訂單數、客單價、坪效最佳店）
+- 中間放月營收趨勢圖與產品類別銷售佔比圓餅圖
+- 下方放你認為最重要的一個經營洞察，用一句話寫給主管看
+- 繁體中文，風格參考《經濟學人》圖表的簡潔現代感</code></pre>
+
+      <h3>🔸 Round 4 — 增強動態聯動篩選</h3>
+      <pre class="prompt"><code>請幫我改進儀表板網頁：
+1. 在趨勢圖上方加上一個「門市下拉選單（Dropdown）」，讓使用者切換門市時，趨勢圖會動態更新為該門市的月營收趨勢。
+2. 在指標卡旁增加一個「月份篩選按鈕列」（1-6月），點擊特定月份後，上方指標卡與圓餅圖會動態聯動更新。</code></pre>
+
+      <h3>🔸 Round 5 — 決策建議與列印匯出</h3>
+      <pre class="prompt"><code>請完成最終優化：
+1. 在儀表板底部加上「AI 商業策略建議」區塊，針對坪效表現差的門市自動給出 3 點具體改善建議（例如提高外帶比例）。
+2. 在網頁右上角新增一個「匯出/列印 PDF 報告」按鈕，點擊時會觸發瀏覽器的列印視窗。</code></pre>
+
+      <!-- ============ 追問檢查點 ============ -->
+      <h2 id="checkpoint">🔍 追問檢查點（下課前完成）</h2>
+
+      <div class="callout tip">
+        <span class="callout-label">💡 為什麼要追問</span>
+        <p>Anthropic 2026 研究：會對生成內容追問的學習者，理解度 <strong>65%+</strong>；照單全收的<strong>不到 40%</strong>。</p>
+      </div>
+
+      <p>向 Claude 追問兩個「為什麼」，把答案濃縮記在講義上（紙本或自己的筆記）：</p>
+      <ol>
+        <li>問題：＿＿＿＿＿＿＿＿＿＿　答案重點：＿＿＿＿＿＿＿＿＿＿</li>
+        <li>問題：＿＿＿＿＿＿＿＿＿＿　答案重點：＿＿＿＿＿＿＿＿＿＿</li>
+      </ol>
+      <p class="muted small">問題舉例：「為什麼你用中位數而不是平均數處理異常值？」「這個直方圖的 bin 數是怎麼決定的？」</p>
+
+      <!-- ============ 自由活動 ============ -->
+      <h2 id="freetime">💡 自由活動：發想你明天想做的題目</h2>
+      <p class="muted small">11:30–12:00</p>
+
+      <p>明天 Day 2 我們會用 Claude Code 從零做出一個<strong>能執行的小工具</strong>。現在花點時間，想一個<strong>你自己想做</strong>的題目——明天就可以拿它來實作！</p>
+
+      <h3>怎麼想（想不到很正常，看這些方向）</h3>
+      <ul>
+        <li>把你常做的<strong>重複作業自動化</strong>（例如整理文獻、批次改檔名）</li>
+        <li>把<strong>一堆資料變成一張圖</strong>（你的實驗數據、某個公開資料集）</li>
+        <li>把某個 <strong>Excel 流程變成網頁</strong>小工具</li>
+        <li>做一個<strong>只有你需要</strong>的小東西（課表、追蹤器、計算機⋯⋯）</li>
+      </ul>
+
+      <div class="callout warn">
+        <span class="callout-label">⚠️ 寧小勿大</span>
+        <p>一個 <strong>30 分鐘做得完</strong>的小工具，勝過做不完的大東西。</p>
+      </div>
+
+      <p><strong>填寫題目發想表單</strong>：請點選上方選單或前往 <a href="survey.html"><strong>題目發想表單頁面</strong></a>，寫下預計的題目名稱、想解決的痛點、以及預期需要的功能。</p>
+
+      <div class="callout tip">
+        <span class="callout-label">💡 你的題目有機會成為明天全班的例子</span>
+        <p>老師會收集大家的題目，明天挑幾個當示範案例或 Mini Hackathon 選項。真的想不到也沒關係，明天有 6 個備選題目。</p>
+      </div>
+
+      <!-- ============ 回家作業 ============ -->
+      <h2 id="homework">📋 回家作業：Day 2 環境安裝</h2>
+
+      <p>明天要用 <strong>Claude Code</strong>（能直接讀寫你電腦檔案的 AI）。請<strong>今晚</strong>完成安裝，約 15 分鐘，<strong>兩種方式擇一即可</strong>。
+      </p>
+
+      <div class="card-grid">
+        <a class="card is-key" href="install.html">
+          <span class="card-num">今晚必做</span>
+          <h3>Day 2 環境安裝指南 →</h3>
+          <p>完整步驟、自檢清單、FAQ 都在這頁。桌面 App 全程用點的，不用打指令。</p>
+          <div class="card-meta">
+            <span class="tag">約 15 分鐘</span>
+            <span class="arrow">→</span>
+          </div>
+        </a>
+      </div>
+
+      <div class="callout rescue">
+        <span class="callout-label">🆘 卡住怎麼辦</span>
+        <p>把錯誤訊息貼給 <a href="https://claude.ai" target="_blank" rel="noopener">claude.ai</a> 問——<strong>這就是 vibe
+            coding</strong>。真的不行，明天 <strong>08:45 前</strong>到教室找助教。</p>
+      </div>
+
+      <div class="pager">
+        <a href="index.html">← 回首頁</a>
+        <a href="install.html">安裝指南 →</a>
+      </div>
+
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <div class="inner">
+      <span>Vibe Coding 實作工作坊 ・ <a href="https://bigdata.scu.edu.tw" target="_blank" rel="noopener">資料科學系</a> ＆ <a href="https://nlp.bigdata.scu.edu.tw" target="_blank" rel="noopener">SCU NLP Lab</a> ・ Day 1</span>
+      <span><a href="index.html">回首頁</a></span>
+    </div>
+  </footer>
+
+  <script src="assets/app.js"></script>
+</body>
+
+</html>

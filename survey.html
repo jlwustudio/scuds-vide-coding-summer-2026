@@ -1,0 +1,383 @@
+<!--
+============================================================
+🛠️ 講師部署指引 (Google Apps Script 後端設置)
+============================================================
+此表單為 Serverless 設計，請講師依以下步驟部署 GAS 後端：
+
+1. 建立一個新的 Google 試算表 (Google Sheets)。
+2. 點選選單的 「擴充功能」 ➔ 「Apps Script」。
+3. 清除所有預設程式碼，貼入下方的 Google Apps Script 程式碼並儲存。
+4. 點選右上角「部署」➔「新增部署」。
+5. 設定類型為「網頁應用程式」 (Web App)：
+   - 專案說明：Vibe Coding Survey API
+   - 執行身分：選擇「我」 (您的 Google 帳號)
+   - 誰有權限存取：選擇「任何人」 (Anyone)
+6. 點選「部署」，核准必要的存取權限，並複製產生的「網頁應用程式網址」 (Web App URL)。
+7. 修改本檔案 (survey.html)，將底部的 GAS_WEBAPP_URL 變數值替換為您的 Web App URL。
+
+------------------------------------------------------------
+📄 Google Apps Script 原始碼：
+------------------------------------------------------------
+
+function doPost(e) {
+  try {
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    
+    // 若試算表為空，寫入欄位標題
+    if (sheet.getLastRow() === 0) {
+      sheet.appendRow(["時間戳記", "學員姓名 / 學號", "題目名稱", "專案敘述", "預計功能需求"]);
+    }
+    
+    var timestamp = new Date();
+    var name = e.parameter.name || "";
+    var title = e.parameter.title || "";
+    var desc = e.parameter.desc || "";
+    var features = e.parameter.features || "";
+    
+    sheet.appendRow([timestamp, name, title, desc, features]);
+    
+    return ContentService.createTextOutput("Success").setMimeType(ContentService.MimeType.TEXT);
+  } catch (err) {
+    return ContentService.createTextOutput("Error: " + err.toString()).setMimeType(ContentService.MimeType.TEXT);
+  }
+}
+
+function doGet(e) {
+  return ContentService.createTextOutput("GAS Web App is running successfully.").setMimeType(ContentService.MimeType.TEXT);
+}
+
+============================================================
+-->
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Day 2 題目發想表單 — Vibe Coding 工作坊</title>
+  <meta name="description" content="Day 2 Mini Hackathon 專案開發題目發想表單。填寫後自動匯入 Google 試算表。">
+  <link rel="stylesheet" href="assets/style.css">
+  <style>
+    .survey-layout {
+      display: grid;
+      grid-template-columns: 1fr 1.3fr;
+      gap: 40px;
+      margin-top: 30px;
+      align-items: start;
+    }
+
+    .survey-info {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .info-card {
+      background: var(--raised);
+      border: 1px solid var(--line-soft);
+      border-radius: var(--radius);
+      padding: 26px;
+      box-shadow: var(--shadow);
+      transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .info-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(43, 42, 39, 0.06);
+    }
+
+    .info-card h3 {
+      margin-top: 0;
+      margin-bottom: 14px;
+      font-size: 1.1rem;
+      color: var(--fg);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .info-card ul {
+      padding-left: 20px;
+      margin: 0;
+    }
+
+    .info-card li {
+      margin-bottom: 10px;
+      font-size: 0.92rem;
+      line-height: 1.6;
+    }
+
+    .info-card li strong {
+      color: var(--clay-deep);
+    }
+
+    /* 強制表單排版上下堆疊，防止被其他全域樣式干擾 */
+    .form-card {
+      background: var(--raised) !important;
+      border: 1px solid var(--line-soft) !important;
+      border-radius: var(--radius) !important;
+      padding: 30px !important;
+      box-shadow: var(--shadow) !important;
+      box-sizing: border-box !important;
+      width: 100% !important;
+    }
+
+    .form-group {
+      display: block !important;
+      margin-bottom: 26px !important;
+      width: 100% !important;
+      box-sizing: border-box !important;
+    }
+
+    .form-group label {
+      display: block !important;
+      font-weight: 700 !important;
+      margin-bottom: 10px !important;
+      font-size: 1.02rem !important;
+      color: var(--ink) !important;
+      text-align: left !important;
+      width: 100% !important;
+    }
+
+    .form-control {
+      display: block !important;
+      width: 100% !important;
+      padding: 14px 18px !important;
+      border-radius: var(--radius) !important;
+      border: 1px solid var(--line) !important;
+      background: var(--bg) !important;
+      color: var(--fg) !important;
+      font-family: inherit !important;
+      font-size: 1.05rem !important;
+      box-sizing: border-box !important;
+      transition: border-color .15s, box-shadow .15s !important;
+    }
+
+    .form-control:focus {
+      outline: none !important;
+      border-color: var(--clay) !important;
+      box-shadow: 0 0 0 3px var(--clay-wash) !important;
+    }
+
+    textarea.form-control {
+      min-height: 160px !important;
+      resize: vertical !important;
+    }
+
+    .btn-primary {
+      display: block !important;
+      width: 100% !important;
+      background: var(--clay) !important;
+      color: #fff !important;
+      border: none !important;
+      padding: 15px 30px !important;
+      border-radius: var(--radius) !important;
+      font-weight: 700 !important;
+      cursor: pointer !important;
+      transition: background .15s, transform .15s !important;
+      font-size: 1.05rem !important;
+      text-align: center !important;
+      box-sizing: border-box !important;
+    }
+
+    .btn-primary:hover {
+      background: var(--clay-deep) !important;
+      transform: translateY(-1px) !important;
+    }
+
+    .btn-primary:active {
+      transform: translateY(0) !important;
+    }
+
+    .btn-primary:disabled {
+      background: var(--muted) !important;
+      cursor: not-allowed !important;
+      transform: none !important;
+    }
+
+    .form-status {
+      margin-top: 15px !important;
+      padding: 12px !important;
+      border-radius: var(--radius) !important;
+      font-weight: 600 !important;
+      display: none !important;
+    }
+
+    .form-status.success {
+      background: var(--sage-wash) !important;
+      color: var(--sage) !important;
+      border: 1px solid var(--sage-soft) !important;
+      display: block !important;
+    }
+
+    .form-status.error {
+      background: var(--amber-wash) !important;
+      color: var(--amber) !important;
+      border: 1px solid var(--amber-soft) !important;
+      display: block !important;
+    }
+
+    @media (max-width: 900px) {
+      .survey-layout {
+        grid-template-columns: 1fr;
+        gap: 30px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="site-header">
+    <div class="inner">
+      <a class="brand" href="index.html">
+        <img src="assets/bigdata_logo.png" alt="東吳資科" class="header-logo">
+        <img src="assets/nlp_logo.png" alt="NLP Lab" class="header-logo">
+        Vibe Coding 工作坊
+        <small>7/18–19</small>
+      </a>
+      <nav class="site-nav">
+        <a href="index.html">首頁</a>
+        <a href="install.html">安裝指南</a>
+        <a href="day1.html">Day 1 講義</a>
+        <a href="day2.html">Day 2 講義</a>
+        <a href="survey.html" aria-current="page">題目發想</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <div class="hero">
+      <span class="kicker">Day 1 自由活動 ・ 7/18（六）</span>
+      <h1>Day 2 專案開發題目發想</h1>
+      <p class="lede">明天我們要用 Claude Code 從零開發一個你專屬的小工具。請在此填寫你的題目與構想！</p>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="survey-layout">
+
+      <!-- ============ 左欄：發想指引 ============ -->
+      <div class="survey-info">
+        <div class="info-card">
+          <h3>💡 想不到題目？可以參考這些方向</h3>
+          <ul>
+            <li><strong>重複作業自動化</strong>：例如寫一個腳本批次修改檔名、自動整理文獻、將特定網頁資料抓下來整理成表格。</li>
+            <li><strong>數據視覺化</strong>：將你的實驗數據或公开資料集 (CSV) 一鍵繪製成精美的折線圖、直方圖並自動存成圖片。</li>
+            <li><strong>Excel 流程網頁化</strong>：把常用的繁瑣 Excel 計算公式轉化成美觀、直覺的網頁小計算機。</li>
+            <li><strong>個人生活小工具</strong>：如個人記帳追蹤器、自製課表、倒數計時工具或特定公式計算器。</li>
+          </ul>
+        </div>
+
+        <div class="info-card" style="border-left: 4px solid var(--amber);">
+          <h3 style="color: var(--amber-deep);">⚠️ 寧小勿大原則</h3>
+          <p style="font-size: 0.92rem; line-height: 1.6; margin: 0;">
+            在 Vibe Coding 的開發流程中，切忌一開始就寫宏偉複雜的大系統。建議構思一個<strong>能在 30
+              分鐘內用代碼寫完</strong>的小工具。快速跑通「設計、生成、測試、執行」的循環，所獲得的成就感與實用價值才是最高的。
+          </p>
+        </div>
+
+        <div class="info-card" style="border-left: 4px solid var(--clay);">
+          <h3 style="color: var(--clay-deep);">📢 講師的小提醒</h3>
+          <p style="font-size: 0.92rem; line-height: 1.6; margin: 0;">
+            我們會收集大家的點子，並在明天挑選合適的題目作為課堂實作範例或 Mini Hackathon 的選配挑戰。若真的想不到也不用擔心，講義後方也貼心準備了 6 個精選的備選題目供您直接選用。
+          </p>
+        </div>
+      </div>
+
+      <!-- ============ 右欄：發想表單 ============ -->
+      <div class="form-card">
+        <form id="surveyForm">
+          <div class="form-group">
+            <label for="studentName">學員姓名 / 學號 <span style="color: var(--amber);">*</span></label>
+            <input type="text" id="studentName" name="name" class="form-control" placeholder="例：陳小明 / M1140201"
+              required>
+          </div>
+
+          <div class="form-group">
+            <label for="projectTitle">預計題目名稱 <span style="color: var(--amber);">*</span></label>
+            <input type="text" id="projectTitle" name="title" class="form-control" placeholder="例：實驗數據批次畫圖助理、個人課表產生器"
+              required>
+          </div>
+
+          <div class="form-group">
+            <label for="projectDesc">專案敘述（做什麼、解決什麼痛點） <span style="color: var(--amber);">*</span></label>
+            <textarea id="projectDesc" name="desc" class="form-control"
+              placeholder="請描述工具的用途，例如：我每次做實驗都需要手動開啟多個 CSV，複製特定欄位繪製成趨勢圖。這個工具可以讓我指定資料夾路徑，自動批次將所有 CSV 產出 PNG 折線圖..."
+              required></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="projectFeatures">預計需要哪些功能（建議列出 2-4 項） <span style="color: var(--amber);">*</span></label>
+            <textarea id="projectFeatures" name="features" class="form-control"
+              placeholder="例：&#10;1. 讀取指定資料夾下的所有 CSV 檔案&#10;2. 自動排除極端異常值&#10;3. 用 Matplotlib 畫出趨勢圖並存成 PNG&#10;4. 在終端機印出簡單的彙整報告"
+              required></textarea>
+          </div>
+
+          <button type="submit" id="submitBtn" class="btn-primary" style="width: 100%; margin-top: 10px;">
+            <span>提交發想題目</span>
+          </button>
+        </form>
+
+        <div id="statusMessage" class="form-status"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <footer class="site-footer" style="margin-top: 60px;">
+    <div class="inner">
+      <span>Vibe Coding 實作工作坊 ・ 2026 暑期 ・ <a href="https://bigdata.scu.edu.tw" target="_blank" rel="noopener">資料科學系</a>
+        ＆ <a href="https://nlp.bigdata.scu.edu.tw" target="_blank" rel="noopener">SCU NLP Lab</a></span>
+      <span><a href="index.html">回首頁</a></span>
+    </div>
+  </footer>
+
+  <script>
+    // ============================================================
+    // 講師設定：請在下方填入部署後的 Google Apps Script 網頁應用程式網址
+    // ============================================================
+    const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzyjUrXAS5AJWN-7O14oU8brDNZIFvDCres7msM4BWZqan5wob77jT92_t5ulAduUML/exec";
+
+    const form = document.getElementById("surveyForm");
+    const submitBtn = document.getElementById("submitBtn");
+    const statusMsg = document.getElementById("statusMessage");
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      // 禁用按鈕與顯示讀取狀態
+      submitBtn.disabled = true;
+      submitBtn.querySelector("span").textContent = "正在提交中...";
+      statusMsg.className = "form-status";
+      statusMsg.style.display = "none";
+
+      const formData = new FormData(form);
+
+      // 發送 POST 請求至 GAS (使用 no-cors 模式防止 CORS 阻擋，但成功寫入)
+      fetch(GAS_WEBAPP_URL, {
+        method: "POST",
+        body: formData,
+        mode: "no-cors"
+      })
+        .then(() => {
+          // no-cors 模式下瀏覽器不會回傳 body 內容，但如果沒有拋出異常即代表成功送出
+          statusMsg.textContent = "🎉 提交成功！明天讓我們一起將這個專案做出來！";
+          statusMsg.className = "form-status success";
+          form.reset();
+        })
+        .catch((error) => {
+          console.error("Submission error:", error);
+          statusMsg.textContent = "❌ 提交失敗，請檢查網路連接或聯繫助教！";
+          statusMsg.className = "form-status error";
+        })
+        .finally(() => {
+          submitBtn.disabled = false;
+          submitBtn.querySelector("span").textContent = "提交發想題目";
+        });
+    });
+  </script>
+
+</body>
+
+</html>

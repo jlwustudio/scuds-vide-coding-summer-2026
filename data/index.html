@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>練習資料集 — Vibe Coding 工作坊</title>
+  <meta name="description" content="山嵐咖啡銷售資料集下載。Day 1 實作③與 Day 2 會用到。">
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+
+<body>
+
+  <header class="site-header">
+    <div class="inner">
+      <a class="brand" href="../index.html">
+        <span class="dot"></span>
+        Vibe Coding 工作坊
+        <small>7/18–19</small>
+      </a>
+      <nav class="site-nav">
+        <a href="../index.html">首頁</a>
+        <a href="../install.html">安裝指南</a>
+        <a href="../day1.html">Day 1 講義</a>
+        <a href="../day2.html">Day 2 講義</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <div class="hero">
+      <span class="kicker">練習資料</span>
+      <h1>山嵐咖啡 資料集</h1>
+      <p class="lede">一間虛構連鎖咖啡店的 2026 上半年銷售資料。<strong>Day 1 實作③</strong>開始會用到，<strong>Day 2</strong> 拿它訓練預測模型。</p>
+      <div class="meta">
+        <span>📄 2 個 CSV</span>
+        <span>📊 16,390 筆交易</span>
+        <span>💾 約 1.4 MB</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="page no-toc">
+    <main>
+
+      <h2 id="download">下載</h2>
+
+      <div class="card-grid">
+        <a class="card is-key" href="sales_2026H1.csv" download>
+          <span class="card-num">主要資料</span>
+          <h3>sales_2026H1.csv</h3>
+          <p>銷售交易明細，16,390 筆。含日期、門市、產品類別、數量、金額、顧客類型、付款方式。</p>
+          <div class="card-meta">
+            <span class="tag">點擊下載</span>
+            <span class="arrow">↓</span>
+          </div>
+        </a>
+        <a class="card is-key" href="stores.csv" download>
+          <span class="card-num">關聯資料</span>
+          <h3>stores.csv</h3>
+          <p>門市基本資訊。含店名、城市、坪數、員工人數——拿來跟銷售明細做 join，算坪效。</p>
+          <div class="card-meta">
+            <span class="tag">點擊下載</span>
+            <span class="arrow">↓</span>
+          </div>
+        </a>
+      </div>
+
+      <div class="callout tip">
+        <span class="callout-label">💡 下載到哪裡</span>
+        <p><strong>Day 1</strong>：下載到桌面就好，等一下要用 claude.ai 輸入框的 <strong>➕</strong> 上傳。</p>
+        <p><strong>Day 2</strong>：要把這兩個檔案放進你的專案資料夾裡，Claude Code 才讀得到。</p>
+      </div>
+
+      <h2 id="about">關於這份資料</h2>
+
+      <p>這是一份<strong>刻意做髒的</strong>資料集。</p>
+
+      <p>真實世界的資料永遠不乾淨——會漏填、會打錯字、會有「台北」和「臺北」同時存在。如果直接丟給 AI 分析，它會照單全收，算出一個<strong>看起來很漂亮但其實是錯的</strong>結論。</p>
+
+      <div class="callout scenario">
+        <span class="callout-label">情境</span>
+        <p>你是山嵐咖啡的資料分析師。老闆把上半年的銷售資料丟給你，說下午主管會議要幾個重點洞察。</p>
+        <p>你的第一個動作<strong>不是</strong>開始分析——是先確認這份資料乾不乾淨。這就是實作③要練的事。</p>
+      </div>
+
+      <p class="muted small">這份資料裡藏了幾類典型的髒資料問題，等你自己（和 Claude）去找。答案不在這頁——找出來的過程才是重點。</p>
+
+      <h2 id="fields">欄位速查</h2>
+
+      <div class="table-scroll">
+        <table>
+          <tr>
+            <th style="width:26%">檔案</th>
+            <th>欄位</th>
+          </tr>
+          <tr>
+            <td><code>sales_2026H1.csv</code><br><span class="muted small">16,390 筆</span></td>
+            <td>
+              <code>訂單編號</code>、<code>日期</code>、<code>門市</code>、<code>城市</code>、<code>產品</code>、<code>類別</code>、<code>單價</code>、<code>數量</code>、<code>金額</code>、<code>付款方式</code>、<code>會員編號</code>
+            </td>
+          </tr>
+          <tr>
+            <td><code>stores.csv</code><br><span class="muted small">6 間門市</span></td>
+            <td><code>門市</code>、<code>城市</code>、<code>開幕日期</code>、<code>坪數</code>、<code>店型</code>、<code>座位數</code></td>
+          </tr>
+        </table>
+      </div>
+
+      <p class="muted small">兩個檔案都是 <code>utf-8-sig</code> 編碼，用 Excel 開也不會亂碼。兩份資料靠 <code>門市</code> 關聯（注意兩張表都有
+        <code>城市</code>，join 時會撞名）。</p>
+
+      <div class="callout tip">
+        <span class="callout-label">💡 沒有「是不是會員」這個欄位</span>
+        <p>只有 <code>會員編號</code>，空白代表非會員（16,390 筆裡有 9,346 筆空白）。想用「是否會員」當特徵，得<strong>自己從原始欄位推導</strong>——這就是特徵工程。</p>
+      </div>
+
+      <div class="pager">
+        <a href="../index.html">← 回首頁</a>
+        <a href="../day1.html">Day 1 講義 →</a>
+      </div>
+
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <div class="inner">
+      <span>Vibe Coding 實作工作坊 ・ 2026 暑期 ・ <a href="https://bigdata.scu.edu.tw" target="_blank" rel="noopener">資料科學系</a>
+        ＆ <a href="https://nlp.bigdata.scu.edu.tw" target="_blank" rel="noopener">SCU NLP Lab</a></span>
+      <span><a href="../index.html">回首頁</a></span>
+    </div>
+  </footer>
+
+  <script src="../assets/app.js"></script>
+</body>
+
+</html>
