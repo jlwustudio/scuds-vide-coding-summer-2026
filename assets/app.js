@@ -242,11 +242,48 @@
     sync();
   }
 
+  /* ---------- Modal 對話框 ---------- */
+  function openModal(id) {
+    var modal = document.getElementById(id);
+    if (!modal) return;
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal(id) {
+    var modal = document.getElementById(id);
+    if (!modal) return;
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  function initModals() {
+    document.querySelectorAll('.modal-overlay').forEach(function (overlay) {
+      overlay.addEventListener('click', function (e) {
+        if (e.target === overlay) {
+          closeModal(overlay.id);
+        }
+      });
+    });
+    // 監聽 ESC 鍵關閉 Modal
+    window.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.modal-overlay.active').forEach(function (activeModal) {
+          closeModal(activeModal.id);
+        });
+      }
+    });
+  }
+
+  window.openModal = openModal;
+  window.closeModal = closeModal;
+
   function init() {
     initOS();
     initCopy();
     initChecks();
     initTOC();
+    initModals();
   }
 
   if (document.readyState === 'loading') {

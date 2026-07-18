@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>進階技巧 — Vibe Coding 工作坊</title>
+  <meta name="description" content="Claude Code 進階使用技巧：貼圖除錯、@ 檔案引用、上下文管理、Skills、MCP。給做完核心軌、想更進一步的人的課後自學頁。">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+
+<body>
+
+  <header class="site-header">
+    <div class="inner">
+      <a class="brand" href="index.html">
+        <img src="assets/bigdata_logo.png" alt="東吳資科" class="header-logo">
+        <img src="assets/nlp_logo.png" alt="NLP Lab" class="header-logo">
+        Vibe Coding 工作坊
+        <small>7/18–19</small>
+      </a>
+      <nav class="site-nav">
+        <a href="index.html">首頁</a>
+        <a href="install.html">安裝指南</a>
+        <a href="day1.html">Day 1 講義</a>
+        <a href="day2.html">Day 2 講義</a>
+        <a href="survey.html">題目發想</a>
+        <a href="advanced.html" aria-current="page">進階技巧</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <div class="hero">
+      <span class="kicker">課後自學 ・ 進階</span>
+      <h1>Claude Code 進階技巧</h1>
+      <p class="lede"><strong>核心軌不需要這頁</strong>——這裡是給做完 Day 2、想再往前一步的人。六個技巧，每個都配一個資料科學情境和可以直接貼的提示詞。挑對你有用的看就好。</p>
+      <div class="meta">
+        <span>🖥️ 大多 Desktop App 就能用</span>
+        <span>⌨️ 每項附 CLI 對照</span>
+        <span>🌊 舊生／課後自學</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="page">
+
+    <aside class="toc">
+      <div class="toc-title">本頁目錄</div>
+      <ul>
+        <li><a href="#how">這頁怎麼用</a></li>
+        <li><a href="#screenshot">① 貼截圖／圖表除錯</a></li>
+        <li><a href="#atref">② @ 檔案引用</a></li>
+        <li><a href="#context">③ 上下文管理</a></li>
+        <li><a href="#selflearn">④ 讓 Claude 教你自己</a></li>
+        <li><a href="#skills">⑤ Skills：打包重複流程</a></li>
+        <li><a href="#mcp">⑥ MCP：連真實資料</a></li>
+        <li><a href="#resources">推薦資源</a></li>
+      </ul>
+    </aside>
+
+    <main>
+
+      <h2 id="how">這頁怎麼用</h2>
+      <p>Day 2 你已經會了 Claude Code 的四支柱（CLAUDE.md、Plan Mode、小步迭代、安全網）。這頁把常用的<strong>進階技巧</strong>整理成六個獨立單元，彼此不相依，想看哪個看哪個。分成三群：</p>
+      <ul>
+        <li><strong>立刻有感</strong>（①–④）：門檻低，桌面 App 就能用，今天做完核心軌就能試。</li>
+        <li><strong>打包重複流程</strong>（⑤ Skills）：把「每次都要交代的一串話」變成可重用的 <code>/</code> 指令。</li>
+        <li><strong>連真實資料</strong>（⑥ MCP）：從「上傳 CSV」升級到「直接連資料庫與雲端」。</li>
+      </ul>
+
+      <div class="callout tip">
+        <span class="callout-label">💡 這頁的每個功能，你都可以直接問 Claude</span>
+        <p>工具一直在更新。最可靠的自學方式是<strong>問工具本身</strong>——在 Claude Code 裡打「這個功能現在怎麼用？」它內建了自己最新的文件。單元 ④ 就在講這件事。</p>
+      </div>
+
+      <!-- ============ ① 貼圖 ============ -->
+      <h2 id="screenshot">① 貼截圖／圖表除錯</h2>
+
+      <div class="callout scenario">
+        <span class="callout-label">情境</span>
+        <p>你的 <code>train.py</code> 跑出一張殘差圖，但殘差好像有一條斜線的 pattern；或者 matplotlib 的中文標題變成一排「□□□」。這種「用講的講不清楚」的問題，<strong>直接把圖丟給 Claude 看最快</strong>。</p>
+      </div>
+
+      <p><strong>是什麼</strong>：Claude Code 看得懂圖片——截圖、圖表、UI、手繪草圖、論文裡的表格都行。你不用把圖「描述」給它，直接給它看。</p>
+
+      <div class="track-pair">
+        <div class="track desktop">
+          <span class="track-label">🖥️ Desktop App</span>
+          <p>把圖片<strong>直接拖曳</strong>進對話框，或複製後貼上。</p>
+        </div>
+        <div class="track cli">
+          <span class="track-label">⌨️ CLI</span>
+          <p>複製圖片後在終端機貼上：<strong>Windows/Linux 用 <code>Ctrl+V</code></strong>、<strong>macOS（iTerm2）用 <code>Cmd+V</code></strong>。或直接給路徑。</p>
+        </div>
+      </div>
+
+      <p>給路徑的講法（兩種介面都通）：</p>
+      <pre class="prompt"><code>分析這張圖：/path/to/residuals.png</code></pre>
+
+      <p>資料科學最實用的三種用法：</p>
+      <pre class="prompt"><code>（附上 residuals.png）這是我模型的殘差圖，殘差有沒有系統性的 pattern？
+如果有，通常代表我漏了什麼特徵？該怎麼改 features.py？</code></pre>
+      <pre class="prompt"><code>（附上一張跑歪的圖）這張 matplotlib 圖的中文變成方框、圖例還擋住資料點，
+幫我修出圖的那段程式碼。</code></pre>
+      <pre class="prompt"><code>（附上論文裡的一張表格截圖）把這張表轉成一個 pandas DataFrame 的建立程式碼。</code></pre>
+
+      <div class="callout tip">
+        <span class="callout-label">💡 什麼時候截圖、什麼時候複製文字</span>
+        <p><strong>純文字的錯誤訊息，複製文字通常比截圖好</strong>（Claude 能精準讀到每個字）。截圖的主場是<strong>圖表、UI 畫面、示意圖、手繪草圖</strong>——這些用文字描述又慢又不準。</p>
+      </div>
+
+      <!-- ============ ② @ 引用 ============ -->
+      <h2 id="atref">② @ 檔案引用</h2>
+
+      <div class="callout scenario">
+        <span class="callout-label">情境</span>
+        <p>你要 Claude 寫 <code>features.py</code>，希望它<strong>照你已經寫好的 <code>cleaner.py</code> 的風格與註解慣例</strong>。與其等它自己去翻檔案（有時翻錯、有時沒翻），不如一開口就把參考檔塞給它。</p>
+      </div>
+
+      <p><strong>是什麼</strong>：在提示詞裡打 <code>@</code>，直接把某個檔案或資料夾的內容帶進這次對話。打 <code>@</code> 會跳出路徑選單，選了就帶進去。</p>
+
+      <pre class="prompt"><code>照 @cleaner.py 的風格與註解慣例，幫我寫 features.py。</code></pre>
+      <pre class="prompt"><code>根據 @data/資料集說明.md 的欄位規格，檢查 @train.py 有沒有用到不存在的欄位。</code></pre>
+
+      <div class="table-scroll">
+        <table>
+          <tr>
+            <th style="width:32%">寫法</th>
+            <th>效果</th>
+          </tr>
+          <tr>
+            <td><code>@cleaner.py</code></td>
+            <td>把<strong>整個檔案內容</strong>帶進對話</td>
+          </tr>
+          <tr>
+            <td><code>@data/</code></td>
+            <td>把該<strong>資料夾的檔案清單</strong>帶進來（只有列表，不是內容）</td>
+          </tr>
+          <tr>
+            <td><code>@server:resource</code></td>
+            <td>引用連好的 <strong>MCP 服務</strong>的資源（見單元 ⑥）</td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="callout tip">
+        <span class="callout-label">💡 順帶一提</span>
+        <p>用 <code>@</code> 引用某個檔案時，Claude 會<strong>連同那個資料夾的 <code>CLAUDE.md</code> 一起帶進來</strong>——所以你的專案家規會跟著生效。</p>
+      </div>
+
+      <!-- ============ ③ 上下文管理 ============ -->
+      <h2 id="context">③ 上下文管理：<code>/compact</code> 與開新對話</h2>
+
+      <div class="callout scenario">
+        <span class="callout-label">情境</span>
+        <p>你為了調模型跟 Claude 來回聊了三十輪，它開始變慢、甚至忘記你一開始設好的編碼規範，或把前面某個舊錯誤一直帶著走。這不是它壞了——是<strong>對話太長，上下文塞太滿</strong>。</p>
+      </div>
+
+      <p><strong>是什麼</strong>：這是 Day 1「鬼打牆就開新對話」的升級版。長對話會變慢、也更容易忘記前面的規則。兩個工具：</p>
+
+      <div class="table-scroll">
+        <table>
+          <tr>
+            <th style="width:26%">動作</th>
+            <th>什麼時候用</th>
+            <th style="width:26%">怎麼做</th>
+          </tr>
+          <tr>
+            <td><strong>壓縮歷史</strong></td>
+            <td>還在同一個任務，只是聊太長 → 保留重點、把囉嗦的過程摘要掉</td>
+            <td>輸入 <code>/compact</code></td>
+          </tr>
+          <tr>
+            <td><strong>開新對話</strong></td>
+            <td>換一個新任務／已經鬼打牆 → 全部清空重來</td>
+            <td>Desktop 開新 session；CLI 輸入 <code>/clear</code> 或重啟</td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="callout tip">
+        <span class="callout-label">💡 開新對話不會弄丟你的家規</span>
+        <p><code>CLAUDE.md</code> 每次啟動都會自動重讀，所以<strong>開新 session 後專案規矩還在</strong>。放心重開，這是保持 AI 清醒的衛生習慣，不是損失。</p>
+      </div>
+
+      <!-- ============ ④ 讓 Claude 教你自己 ============ -->
+      <h2 id="selflearn">④ 讓 Claude 教你自己 ＋ <code>/powerup</code></h2>
+
+      <div class="callout scenario">
+        <span class="callout-label">情境</span>
+        <p>你聽說 Claude Code 有很多功能，但不知道有哪些、也記不住指令。好消息：<strong>你不用記，直接問它</strong>。</p>
+      </div>
+
+      <p><strong>是什麼</strong>：Claude Code 內建了自己<strong>最新版</strong>的說明文件，不管你裝的是哪個版本。不確定怎麼做，直接用白話問：</p>
+
+      <pre class="prompt"><code>Claude Code 有哪些技能可以用？（what skills are available?）</code></pre>
+      <pre class="prompt"><code>要怎麼用 MCP 連我的資料庫？</code></pre>
+      <pre class="prompt"><code>Claude Code 可以幫我開 pull request 嗎？怎麼做？</code></pre>
+
+      <p>另外兩個好用的內建指令：</p>
+      <ul>
+        <li><code>/powerup</code> — 內建的<strong>互動式教學</strong>，用動畫示範各種功能，最適合初次上手。</li>
+        <li><code>/help</code> — 列出目前可用的指令。</li>
+      </ul>
+
+      <div class="callout tip">
+        <span class="callout-label">💡 這才是面對「一直在變的工具」的正解</span>
+        <p>Claude Code 幾乎每週都在加功能。與其去背哪個部落格教的舊語法，<strong>問工具本身永遠是最新的</strong>。這頁教的每個技巧，你都可以再問它要更細的用法。</p>
+      </div>
+
+      <!-- ============ ⑤ Skills ============ -->
+      <h2 id="skills">⑤ Skills：把重複的流程打包成 <code>/</code> 指令</h2>
+
+      <div class="callout scenario">
+        <span class="callout-label">情境</span>
+        <p>你發現自己每次都在對 Claude 交代同一串話：「用繁體中文、加詳細註解、先 Plan 再寫、報告一定要附 R²/MAE 表和特徵重要性圖」。與其每次重打，不如把它<strong>包成一個技能</strong>，以後打 <code>/ml報告</code> 就到位。</p>
+      </div>
+
+      <p><strong>是什麼</strong>：Skill 就是一個放在資料夾裡的 <code>SKILL.md</code>，裝著一串你常用的指令或流程。你可以打 <code>/技能名</code> 直接叫它，Claude 也會在情境符合時自動用它。（官方已經把「自訂 slash 指令」併進 Skills，所以現代寫法就是 <code>SKILL.md</code>。）</p>
+
+      <div class="callout tip">
+        <span class="callout-label">💡 跟 CLAUDE.md 怎麼分工</span>
+        <p><strong>「事實」放 CLAUDE.md</strong>（專案背景、欄位規格、用哪些套件）——每次啟動自動載入。<strong>「可重複的流程」包成 Skill</strong>（一套報告 SOP、一種清理步驟）——用到才載入，不佔平常的 context。當你發現 CLAUDE.md 裡某一段從「描述」長成了「步驟」，就該把它搬成 Skill。</p>
+      </div>
+
+      <h3>怎麼做</h3>
+      <p>建一個資料夾放 <code>SKILL.md</code>。放個人層（跨所有專案都能用）：</p>
+
+      <div class="track-pair">
+        <div class="track desktop">
+          <span class="track-label">🖥️ Desktop / ⌨️ CLI 皆同</span>
+          <p>個人層路徑 <code>~/.claude/skills/&lt;技能名&gt;/SKILL.md</code>；只想給這個專案用就放 <code>.claude/skills/&lt;技能名&gt;/SKILL.md</code>。<strong>資料夾名字就是你打的指令名。</strong></p>
+        </div>
+      </div>
+
+      <p>其實最快的方式是<strong>叫 Claude 幫你建</strong>：</p>
+      <pre class="prompt"><code>幫我建立一個名為 ml報告 的個人 skill（放在 ~/.claude/skills/ml報告/SKILL.md），
+內容是：寫機器學習分析報告時，一律用繁體中文、程式碼加詳細註解、先用 Plan Mode 出計畫、
+報告一定要附 R²/MAE/RMSE 表格與特徵重要性圖，並提醒我檢查資料洩漏。</code></pre>
+
+      <p>它會產出類似這樣的 <code>SKILL.md</code>（開頭 <code>---</code> 之間是 frontmatter，<code>description</code> 讓 Claude 知道何時該用）：</p>
+      <pre><code>---
+description: 產出機器學習分析報告。當我要求整理模型結果、寫分析報告，或做「對答案」時使用。
+---
+
+寫報告時一律遵守：
+- 全程繁體中文，程式碼加上詳細註解
+- 先用 Plan Mode 出計畫，我同意後再動手
+- 報告一定要附：R² / MAE / RMSE 表格、特徵重要性圖、一段「模型限制」
+- 交報告前提醒我檢查有沒有資料洩漏</code></pre>
+
+      <p>之後在任何專案打 <code>/ml報告</code> 就會套用，或你一提到「幫我整理模型結果」它就自動用。</p>
+
+      <div class="callout tip">
+        <span class="callout-label">💡 你其實已經在用 Skills 了</span>
+        <p>Claude Code 內建的 <code>/code-review</code>、<code>/debug</code> 這些就是 skills。想更進階（測試、優化自己的技能）可以查官方的 <code>skill-creator</code>。</p>
+      </div>
+
+      <!-- ============ ⑥ MCP ============ -->
+      <h2 id="mcp">⑥ MCP：從「上傳 CSV」升級到「連真實資料」</h2>
+
+      <div class="callout scenario">
+        <span class="callout-label">情境</span>
+        <p>兩天課裡你都是把 CSV 上傳或拖進資料夾。但真實工作中，資料常常在<strong>資料庫或雲端</strong>裡。你不想每次都手動下 SQL、匯出 CSV、再上傳——你想直接叫 Claude「查這個月每家門市的營收」。這就是 MCP 在做的事。</p>
+      </div>
+
+      <p><strong>是什麼</strong>：MCP（Model Context Protocol）是一個開放標準，讓 Claude Code 連上外部工具與資料源——PostgreSQL、Notion、Slack、GitHub 以及 <strong>Google Sheets (試算表) / Google Drive</strong> 等。連好之後，Claude 能<strong>直接讀它們、對它們動作（例如讀取或寫入資料）</strong>，不用你當人肉搬運工。</p>
+
+      <div class="track-pair">
+        <div class="track desktop">
+          <span class="track-label">🖥️ Desktop App</span>
+          <p>點 <strong>+ → Connectors</strong>，選官方連接器（如 Google Drive / Sheets、Notion、GitHub），照畫面完成 OAuth 授權登入即可。最無痛。</p>
+        </div>
+        <div class="track cli">
+          <span class="track-label">⌨️ CLI</span>
+          <pre><code># 遠端 HTTP 服務（例：Notion）
+claude mcp add --transport http notion https://mcp.notion.com/mcp
+
+# 新增 Google Sheets 連接器 (使用開源 MCP 伺服器)
+claude mcp add google-sheets -- npx -y @smithery/mcp-server-google-sheets
+
+# 管理與查狀態
+claude mcp list
+/mcp</code></pre>
+        </div>
+      </div>
+
+      <p>連好之後就能這樣用：</p>
+      <pre class="prompt"><code>查我們 PostgreSQL 上這個月每家門市的營收，聚合成每店每天，存成一份 CSV。</code></pre>
+      <pre class="prompt"><code>把我 Google Sheets 裡名為「專櫃業績通報」的試算表讀進來，做跟 Day 2 一樣的清理。</code></pre>
+      <pre class="prompt"><code>將今日預測的冷萃咖啡銷售結果，自動追加到 Google Sheets 中名為「每日預測記錄」表格的最後一列。</code></pre>
+
+      <div class="callout tip">
+        <span class="callout-label">💡 Google Sheets MCP 運作原理</span>
+        <p>不論是 Desktop App 內建的 Google Drive 連接器，還是 CLI 使用的 Google Sheets MCP Server，背後都是透過 Google API 與 OAuth 授權。AI 會將你的自然語言意圖（例如「讀取 A1:B10 範圍」）轉化為對 API 的調用，實現雙向的資料讀取與自動回寫。</p>
+      </div>
+
+      <div class="callout warn">
+        <span class="callout-label">⚠️ 安全：這是把 AI 接上你的真實系統</span>
+        <p>MCP 給 Claude 存取你實際資料庫／雲端的權限。所以：<strong>連正式資料庫先用唯讀帳號或測試庫</strong>；每個動作看懂它要做什麼再放行；授權一律走官方或受信任的連接器，不要把敏感密碼直接貼進對話。</p>
+      </div>
+
+      <div class="callout tip">
+        <span class="callout-label">💡 不確定接什麼？問它</span>
+        <p>直接問「how do I use MCP with Claude Code?」或「幫我把本地的 SQLite 接成 MCP」，Claude 會帶你一步一步走（呼應單元 ④）。</p>
+      </div>
+
+      <!-- ============ 推薦資源 ============ -->
+      <h2 id="resources">推薦資源</h2>
+
+      <ul>
+        <li><strong>官方文件</strong>：<a href="https://code.claude.com/docs" target="_blank" rel="noopener">code.claude.com/docs</a>——最權威、最新（本頁所有語法都以此為準）。</li>
+        <li><strong>最佳實踐</strong>：<a href="https://code.claude.com/docs/en/best-practices" target="_blank" rel="noopener">Best practices</a>——寫好 CLAUDE.md、管理 context 的原則。</li>
+        <li><strong>擴充總覽</strong>：<a href="https://code.claude.com/docs/en/features-overview" target="_blank" rel="noopener">Extend Claude Code</a>——Skills / Hooks / MCP / Subagents / Plugins 一次看。</li>
+        <li><strong>Anthropic Academy</strong>：<a href="https://www.anthropic.com/learn" target="_blank" rel="noopener">anthropic.com/learn</a> 的免費課程。</li>
+      </ul>
+
+      <div class="callout tip">
+        <span class="callout-label">🧭 最後一句</span>
+        <p>工具會一直換，能力不會過時的是<strong>「把話講清楚、驗收 AI 的產出、小步迭代」</strong>。想不起某個功能怎麼用，記得——<strong>先問 Claude 自己</strong>。</p>
+      </div>
+
+      <div class="pager">
+        <a href="day2.html">← Day 2 講義</a>
+        <a href="index.html">回首頁 →</a>
+      </div>
+
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <div class="inner">
+      <span>Vibe Coding 實作工作坊 ・ <a href="https://bigdata.scu.edu.tw" target="_blank" rel="noopener">資料科學系</a> ＆ <a
+          href="https://nlp.bigdata.scu.edu.tw" target="_blank" rel="noopener">SCU NLP Lab</a> ・ 進階技巧</span>
+      <span><a href="index.html">回首頁</a></span>
+    </div>
+  </footer>
+
+  <script src="assets/app.js"></script>
+</body>
+
+</html>

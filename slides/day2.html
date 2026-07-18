@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>投影片 — Vibe Coding 工作坊 Day 2</title>
+  <style>
+    :root {
+      --bg: #f6faf9;
+      --fg: #1f2430;
+      --muted: #6b7280;
+      --accent: #0d9488;
+      --accent-soft: #e6f7f4;
+      --card: #ffffff;
+      --border: #e5e7eb;
+      --code-bg: #f3f4f6;
+      --warn: #b45309;
+      --warn-soft: #fef3c7;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #12181a;
+        --fg: #e8eaf0;
+        --muted: #9ca3af;
+        --accent: #2dd4bf;
+        --accent-soft: #1c2e2c;
+        --card: #1a2426;
+        --border: #2f3f42;
+        --code-bg: #1c2e2c;
+        --warn: #fbbf24;
+        --warn-soft: #3a2f14;
+      }
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      height: 100%;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      overflow: hidden;
+      font-family: "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", system-ui, sans-serif;
+    }
+
+    .slide {
+      display: none;
+      position: absolute;
+      inset: 0;
+      padding: 6vh 8vw;
+      flex-direction: column;
+      justify-content: center;
+      gap: 2.6vh;
+    }
+
+    .slide.active {
+      display: flex;
+    }
+
+    h1 {
+      font-size: clamp(40px, 6vw, 80px);
+      line-height: 1.25;
+    }
+
+    h2 {
+      font-size: clamp(30px, 4.2vw, 56px);
+      line-height: 1.3;
+      margin-bottom: 1vh;
+    }
+
+    h2 .kicker,
+    .kicker {
+      display: block;
+      font-size: clamp(16px, 1.6vw, 22px);
+      letter-spacing: .18em;
+      color: var(--accent);
+      font-weight: 700;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    p,
+    li {
+      font-size: clamp(18px, 2.2vw, 30px);
+      line-height: 1.6;
+    }
+
+    ul,
+    ol {
+      padding-left: 1.3em;
+      display: grid;
+      gap: 1vh;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    .accent {
+      color: var(--accent);
+    }
+
+    .big {
+      font-size: clamp(26px, 3.2vw, 44px);
+      line-height: 1.5;
+      font-weight: 600;
+    }
+
+    .center {
+      text-align: center;
+      align-items: center;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2.2vh 1.9vw;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, .05);
+    }
+
+    .cols {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2vw;
+      align-items: stretch;
+    }
+
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.8vh 1.4vw;
+      overflow-x: auto;
+      font-size: clamp(15px, 1.7vw, 23px);
+      line-height: 1.55;
+      font-family: "SF Mono", Menlo, Consolas, monospace;
+      white-space: pre-wrap;
+    }
+
+    code {
+      font-family: "SF Mono", Menlo, Consolas, monospace;
+      background: var(--code-bg);
+      border-radius: 6px;
+      padding: .1em .35em;
+      font-size: .92em;
+    }
+
+    pre code {
+      background: none;
+      padding: 0;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    th,
+    td {
+      border-bottom: 1px solid var(--border);
+      padding: 1vh 1vw;
+      text-align: left;
+      font-size: clamp(16px, 1.8vw, 24px);
+      line-height: 1.45;
+    }
+
+    th {
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .pill {
+      display: inline-block;
+      background: var(--accent-soft);
+      color: var(--accent);
+      border-radius: 999px;
+      padding: .25em .9em;
+      font-weight: 700;
+      font-size: clamp(15px, 1.5vw, 20px);
+      margin-bottom: 1vh;
+    }
+
+    .warnbox {
+      background: var(--warn-soft);
+      border-left: 5px solid var(--warn);
+      border-radius: 10px;
+      padding: 1.8vh 1.5vw;
+    }
+
+    .warnbox p {
+      color: var(--fg);
+    }
+
+    .section-num {
+      font-size: clamp(52px, 8vw, 120px);
+      font-weight: 800;
+      color: var(--accent);
+      opacity: .25;
+      line-height: 1;
+    }
+
+    .step {
+      background: var(--accent-soft);
+      border-radius: 10px;
+      padding: .3em .7em;
+      font-weight: 700;
+      color: var(--accent);
+      display: inline-block;
+      margin-right: .4em;
+    }
+
+    .progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 4px;
+      background: var(--accent);
+      width: 0;
+      transition: width .25s;
+      z-index: 10;
+    }
+
+    .counter {
+      position: fixed;
+      bottom: 14px;
+      right: 20px;
+      color: var(--muted);
+      font-size: 14px;
+      z-index: 10;
+    }
+
+    .hint {
+      position: fixed;
+      bottom: 14px;
+      left: 20px;
+      color: var(--muted);
+      font-size: 13px;
+      z-index: 10;
+    }
+
+    .flow {
+      display: flex;
+      gap: .8vw;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .flow .fstep {
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 700;
+      border-radius: 12px;
+      padding: 1.4vh 1.4vw;
+      font-size: clamp(17px, 2.1vw, 29px);
+    }
+
+    .flow .arr {
+      color: var(--muted);
+      font-size: clamp(19px, 2.3vw, 33px);
+    }
+
+    .tag {
+      font-size: clamp(13px, 1.2vw, 17px);
+      color: var(--muted);
+    }
+
+    /* Slide Logo styles */
+    .slide-logos {
+      display: inline-flex;
+      gap: 20px;
+      margin-top: 5vh;
+      align-items: center;
+      justify-content: center;
+      background: #faf8f5;
+      padding: 12px 24px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(43, 42, 39, 0.06);
+      border: 1px solid rgba(224, 221, 211, 0.5);
+    }
+
+    .slide-logo {
+      height: 76px;
+      width: auto;
+      border-radius: 6px;
+      object-fit: contain;
+      transition: transform 0.2s ease;
+    }
+
+    .slide-logo:hover {
+      transform: scale(1.06);
+    }
+
+    .mobile-nav {
+      display: none;
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 999px;
+      padding: 6px 12px;
+      gap: 20px;
+      z-index: 100;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .mobile-nav button {
+      background: none;
+      border: none;
+      color: var(--fg);
+      font-size: 20px;
+      cursor: pointer;
+      padding: 8px 16px;
+      border-radius: 999px;
+      transition: background 0.2s;
+    }
+
+    .mobile-nav button:active {
+      background: var(--accent-soft);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .mobile-nav {
+        background: rgba(0, 0, 0, 0.4);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+    }
+
+    /* Unify card font hierarchy inside columns */
+    .cols .card .big {
+      font-size: clamp(18px, 1.9vw, 24px) !important;
+      font-weight: 700;
+      margin-bottom: 0.8vh;
+    }
+
+    .cols .card p,
+    .cols .card li {
+      font-size: clamp(13px, 1.4vw, 16px) !important;
+      line-height: 1.5;
+    }
+    
+    .cols .card table th,
+    .cols .card table td {
+      font-size: clamp(12px, 1.3vw, 15px) !important;
+      padding: 0.6vh 0.8vw;
+    }
+
+    .cols .card pre {
+      font-size: clamp(12px, 1.3vw, 14px) !important;
+      padding: 1vh 1vw;
+    }
+
+    .cols .card ul,
+    .cols .card ol {
+      gap: 0.5vh;
+    }
+
+    /* 響應式手機版 RWD 優化 */
+    @media (max-width: 768px) {
+      .slide {
+        padding: 4vh 5vw;
+        justify-content: flex-start;
+        overflow-y: auto;
+      }
+
+      .cols {
+        grid-template-columns: 1fr;
+        gap: 3vh;
+      }
+
+      h1 {
+        font-size: clamp(28px, 8vw, 48px);
+      }
+
+      h2 {
+        font-size: clamp(22px, 6vw, 36px);
+      }
+
+      p,
+      li {
+        font-size: clamp(15px, 4vw, 20px);
+      }
+
+      pre {
+        font-size: clamp(12px, 3.5vw, 16px);
+        padding: 1.5vh 3vw;
+      }
+
+      th,
+      td {
+        font-size: clamp(13px, 3.5vw, 16px);
+        padding: 0.8vh 1.5vw;
+      }
+
+      .section-num {
+        font-size: clamp(40px, 12vw, 70px);
+      }
+
+      .flow .fstep {
+        font-size: clamp(14px, 4vw, 18px);
+        padding: 1vh 2vw;
+      }
+
+      .hint {
+        display: none;
+      }
+
+      .mobile-nav {
+        display: flex;
+      }
+
+      .slide-logos {
+        padding: 8px 16px;
+        gap: 12px;
+        margin-top: 3vh;
+      }
+
+      .slide-logo {
+        height: 54px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="progress" id="progress"></div>
+  <div class="counter" id="counter"></div>
+  <div class="hint">← → 翻頁 ｜ F 全螢幕</div>
+
+  <!-- 1 標題 -->
+  <section class="slide center">
+    <span class="pill">暑期實作工作坊</span>
+    <h1>Vibe Coding 實作<br>Day 2：專案級開發</h1>
+    <p class="muted">7/19（日）09:00–12:00 ｜ Claude Code — 🖥️ Desktop App 為主 ｜ ⌨️ CLI 為輔</p>
+    <div class="slide-logos">
+      <img src="../assets/bigdata_logo.png" alt="東吳資科" class="slide-logo">
+      <img src="../assets/nlp_logo.png" alt="NLP Lab" class="slide-logo">
+    </div>
+  </section>
+
+  <!-- 2 目標 -->
+  <section class="slide">
+    <h2><span class="kicker">Day 2 目標</span>今天結束時，你會…</h2>
+    <ul>
+      <li>上手 <b>Claude Code</b>：AI 直接在你電腦裡讀寫檔案、執行程式</li>
+      <li>掌握四支柱：<b>CLAUDE.md／Plan Mode／小步迭代／安全網</b></li>
+      <li>做出一個<b>真的能執行</b>的儀表板專案</li>
+      <li>Mini Hackathon：不靠講義，<b>獨立走完整套流程</b></li>
+    </ul>
+  </section>
+
+  <!-- 3 自檢 -->
+  <section class="slide">
+    <h2><span class="kicker">起飛前檢查</span>環境自檢（大聲回報）</h2>
+    <div class="cols">
+      <div class="card">
+        <p class="accent big" style="font-size: 20px;">🖥️ 選 Desktop App</p>
+        <ul>
+          <li>App 開得起來、登入成功 ✋</li>
+          <li>點得到 <b>Code</b> 分頁 ✋</li>
+        </ul>
+      </div>
+      <div class="card">
+        <p class="accent big" style="font-size: 20px;">⌨️ 選 CLI</p>
+        <ul>
+          <li><code>claude --version</code> 有版本 ✋</li>
+          <li><code>claude</code> 進得去 ✋</li>
+        </ul>
+      </div>
+    </div>
+    <p class="muted" style="margin-top: 0.5vh;"><code>python3 --version</code> 有版本 ✋（兩種方式都要）</p>
+    <div class="warnbox">
+      <p><b>沒裝成功？救援：</b>切換到另一種方式、跟鄰座同學併桌共看一台，或照講義附錄用網頁版跟課。<b>09:10 準時開課，不等安裝。</b></p>
+    </div>
+  </section>
+
+  <!-- 4 概念: 兩種方式 -->
+  <section class="slide">
+    <h2><span class="kicker">概念</span>兩條路，同一個目的地</h2>
+    <div class="cols">
+      <div class="card">
+        <p class="accent big" style="font-size: 22px;">🖥️ Desktop App</p>
+        <p>圖形介面，點資料夾、打字、看 diff 按 Accept。<b>今天主要示範這個。</b></p>
+      </div>
+      <div class="card">
+        <p class="accent big" style="font-size: 22px;">⌨️ CLI（終端機）</p>
+        <p>用打字操作的視窗，不是駭客工具，別怕。已裝好的同學照樣跟課。</p>
+      </div>
+    </div>
+    <p class="muted">同一顆引擎、同一套邏輯 — 做出來的東西一模一樣。</p>
+  </section>
+
+  <!-- 5 差異對照 -->
+  <section class="slide">
+    <h2><span class="kicker">Claude Code 是什麼</span>跟昨天差在哪</h2>
+    <table>
+      <tr>
+        <th></th>
+        <th>claude.ai（昨天）</th>
+        <th>Claude Code（今天）</th>
+      </tr>
+      <tr>
+        <td>住在哪</td>
+        <td>瀏覽器</td>
+        <td>你的電腦（App 或終端機）</td>
+      </tr>
+      <tr>
+        <td>檔案</td>
+        <td>要手動上傳</td>
+        <td><b>直接讀寫專案資料夾</b></td>
+      </tr>
+      <tr>
+        <td>執行程式</td>
+        <td>沙箱裡跑</td>
+        <td><b>在你電腦上真的跑</b></td>
+      </tr>
+      <tr>
+        <td>適合</td>
+        <td>單一成品、原型</td>
+        <td><b>多檔案專案、持續開發</b></td>
+      </tr>
+    </table>
+  </section>
+
+  <!-- 6 權限=安全帶 -->
+  <section class="slide center">
+    <h2><span class="kicker">重要</span></h2>
+    <p class="big">它能力變大 → 動手前會<span class="accent">先問你</span>。</p>
+    <p>🖥️ Desktop：每個改動先變成 <b>diff</b> 給你看，按 <b>Accept</b> 才真的寫入。<br>⌨️ CLI：跳出權限提示，選 <b>Yes</b> 才執行。</p>
+    <p class="muted">看懂再答應。前兩小時不准開自動接受模式。</p>
+  </section>
+
+  <!-- 7 實作① 標題 -->
+  <section class="slide center">
+    <div class="section-num">實作 ①</div>
+    <h2>第一次用 Claude Code<span class="tag"> ｜ 信心題</span></h2>
+    <p class="muted">09:20–09:50 ｜ 讓它在你電腦建一個檔案就好</p>
+  </section>
+
+  <!-- 8 實作① 步驟 -->
+  <section class="slide">
+    <h2><span class="kicker">實作① 信心題</span>第一次使用 Claude Code — 詳細步驟</h2>
+    <div class="cols" style="gap: 1.5vw;">
+      <div class="card" style="padding: 1.5vh 1.5vw;">
+        <p class="accent big" style="font-size: 20px;">🖥️ Desktop App</p>
+        <ol style="font-size: 13.5px; gap: 0.4vh;">
+          <li>點 <b>Code</b> 分頁 → <b>+ New session</b> → Local → <b>Select folder</b> 新增 <code>hello-claude</code> 資料夾</li>
+          <li><b>初始化 Git</b>：輸入第一個指令「請幫我在此資料夾初始化 git 倉庫」➔ 點 <b>Accept/Allow</b></li>
+          <li><b>建立檔案</b>：指令：「請建立 hello.txt，寫入『第一個檔案』」➔ 看到右側<b>綠色 diff</b> 點 <b>Accept</b></li>
+          <li><b>體驗修改 diff</b>：「修改 hello.txt，在後面加上今天的日期」➔ 看到紅綠 <b>diff 視窗</b>點 <b>Accept</b></li>
+          <li>確認檔案在資料夾中，然後開新 Session</li>
+        </ol>
+      </div>
+      <div class="card" style="padding: 1.5vh 1.5vw;">
+        <p class="accent big" style="font-size: 20px;">⌨️ CLI</p>
+        <ol style="font-size: 13.5px; gap: 0.4vh;">
+          <li>建資料夾、<b>初始化 Git</b>並啟動：<br>
+            <code>mkdir hello-claude && cd hello-claude && git init && claude</code>
+          </li>
+          <li>指令：「請建立 hello.txt，寫入『第一個檔案』」➔ 看到 <b>git diff</b> 輸入 <b>Yes</b></li>
+          <li><b>體驗修改 diff</b>：下指令「修改 hello.txt，在後面加上今天的日期」➔ 看到 <b>git diff</b> 選 <b>Yes</b></li>
+          <li>確認檔案在，完成後輸入 <code>/exit</code> 結束</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9 概念 CLAUDE.md -->
+  <section class="slide">
+    <h2><span class="kicker">支柱 1</span>CLAUDE.md — 專案的家規</h2>
+    <div class="card">
+      <p class="big">想像你每天換一個新實習生，<br>每次都要重講專案背景 — 很煩對吧？</p>
+    </div>
+    <p><b>CLAUDE.md</b> 是放在專案資料夾的「家規」，Claude <b>每次都先讀</b>。寫進：這是什麼專案、資料在哪、有什麼坑、要守什麼規矩。</p>
+    <p class="muted">Desktop App 和 CLI 共用同一份檔案，寫一次兩邊都認得。</p>
+  </section>
+
+  <!-- 10 概念 Plan Mode -->
+  <section class="slide">
+    <h2><span class="kicker">支柱 2</span>Plan Mode — 先計畫，後動工</h2>
+    <p>🖥️ Desktop：模式選單選 <b>Plan</b>　　⌨️ CLI：按 <code>Shift+Tab</code></p>
+    <p>切進去後它<b>只討論做法、不碰檔案</b>。看完計畫你同意，才放行。</p>
+    <div class="card">
+      <p class="big">改計畫比改程式<span class="accent">便宜十倍</span>。</p>
+    </div>
+    <p class="muted">在它寫一堆程式之前先抓錯方向，省超多時間。</p>
+  </section>
+
+  <!-- 11 實作② 標題 -->
+  <section class="slide center">
+    <div class="section-num">實作 ②</div>
+    <h2>建立咖啡 ML 專案骨架<span class="tag"> ｜ 專案起手</span></h2>
+    <p class="muted">09:50–10:20 ｜ 撰寫家規並規劃機器學習專案結構</p>
+  </section>
+
+  <!-- 10a 今天要預測什麼 -->
+  <section class="slide">
+    <h2><span class="kicker">先想清楚題目</span>今天要預測什麼——為什麼不是「單筆訂單金額」</h2>
+    <div class="cols" style="gap: 1.5vw;">
+      <div class="card" style="padding: 1.5vh 1.5vw; border-left: 5px solid var(--warn); background: var(--warn-soft);">
+        <p class="big" style="color: var(--warn); font-size: 20px; margin-bottom: 0.6vh;">[陷阱] 直覺想預測「每筆訂單金額」</p>
+        <p style="font-size: 14px; line-height: 1.5;"><code>金額 = 單價 × 數量</code> 是恆等式，<code>單價</code> 又只是固定價目表：</p>
+        <table style="margin-top: 0.8vh;">
+          <tr><th style="font-size:14px;">餵給模型的特徵</th><th style="font-size:14px;">R²</th></tr>
+          <tr><td style="font-size:14px;">含 <code>單價</code>＋<code>數量</code></td><td style="font-size:14px;"><b>1.0000</b>（洩漏＝抄答案）</td></tr>
+          <tr><td style="font-size:14px;">不含 <code>單價</code>、<code>數量</code></td><td style="font-size:14px;"><b>−0.06</b>（比猜平均還爛）</td></tr>
+        </table>
+        <p style="font-size: 14px; margin-top: 0.8vh;">AI 會很樂意給你 R²=1.0 還恭喜你，<b>不會主動說這是洩漏</b>。R² 高得不像話，第一反應要是懷疑。</p>
+      </div>
+      <div class="card" style="padding: 1.5vh 1.5vw; border-left: 5px solid var(--accent); background: var(--accent-soft);">
+        <p class="accent big" style="font-size: 20px; margin-bottom: 0.6vh;">[題目] 改預測「每間店每天的營收」</p>
+        <p style="font-size: 14px; line-height: 1.5;">把交易明細<b>聚合成「每店每天一列」</b>，題目就成立了：</p>
+        <table style="margin-top: 0.8vh;">
+          <tr><td style="font-size:14px;">預測目標</td><td style="font-size:14px;">日營收＝這間店這天所有交易金額加總</td></tr>
+          <tr><td style="font-size:14px;">可用特徵</td><td style="font-size:14px;">門市、店型、坪數、座位數、星期幾、月份、是否週末</td></tr>
+          <tr><td style="font-size:14px;">資料筆數</td><td style="font-size:14px;">6 店 × 181 天 ≈ <b>1,086 筆</b></td></tr>
+          <tr><td style="font-size:14px;">商業意義</td><td style="font-size:14px;">「下週六大概做多少營收？」排班、備料用得上</td></tr>
+        </table>
+      </div>
+    </div>
+    <p class="muted" style="margin-top: 1vh; font-size: 14px;">[呼應] 昨天你發現坪數跟營收有關——等一下你會看到<b>坪數就是特徵重要性第一名</b>，直覺被模型量化了。</p>
+  </section>
+
+  <!-- 10b ML Pipeline 架構 -->
+  <section class="slide">
+    <h2><span class="kicker">科學與工程並重</span>機器學習專案模組化管線 (ML Pipeline)</h2>
+    <div class="cols" style="gap: 1vw; align-items: stretch; margin-top: 1vh;">
+      <div class="card" style="padding: 1.2vh 1.2vw; flex: 1;">
+        <p class="accent big" style="font-size: 16px; margin-bottom: 0.5vh;">1. 資料清理 [cleaner.py]</p>
+        <p style="font-size: 13px; line-height: 1.4;">讀取原始 sales 與 stores 資料表，進行重複值去重、填補空值、統一文字拼寫，並 Join 合併門市維度資訊。</p>
+      </div>
+      <div class="card" style="padding: 1.2vh 1.2vw; flex: 1;">
+        <p class="accent big" style="font-size: 16px; margin-bottom: 0.5vh;">2. 特徵工程 [features.py]</p>
+        <p style="font-size: 13px; line-height: 1.4;">先把交易明細<b>聚合成「每店每天一列」</b>算出日營收，再提取星期幾／月份／是否週末，對門市與店型做 One-Hot 編碼，並保存編碼器避免訓練-推理不一致。</p>
+      </div>
+      <div class="card" style="padding: 1.2vh 1.2vw; flex: 1;">
+        <p class="accent big" style="font-size: 16px; margin-bottom: 0.5vh;">3. 模型訓練 [train.py]</p>
+        <p style="font-size: 13px; line-height: 1.4;">分割 Train/Test 數據，使用 5-Fold 交叉驗證評估隨機森林模型，計算評估指標，導出圖表並保存
+          model.joblib。</p>
+      </div>
+      <div class="card" style="padding: 1.2vh 1.2vw; flex: 1;">
+        <p class="accent big" style="font-size: 16px; margin-bottom: 0.5vh;">4. 預測推理 [predict.py]</p>
+        <p style="font-size: 13px; line-height: 1.4;">載入已儲存的模型與編碼器，輸入<b>門市與日期</b>，即時預測這間店這天的營收。</p>
+      </div>
+    </div>
+    <p class="muted" style="margin-top: 1.5vh; font-size: 14px;">[提示] <b>為什麼要模組化？</b> 研究生做研究常將程式寫在單一 Notebook
+      中，模組化管線是轉化為<b>生產就緒 (Production-Ready)</b> 工程代碼的第一步。</p>
+  </section>
+
+  <!-- 12 實作② 步驟 -->
+  <section class="slide">
+    <h2><span class="kicker">實作② 專案起手</span>建立 ML 專案骨架與前處理 — 4 輪對話步驟</h2>
+    <div class="cols" style="gap: 1.5vw;">
+      <div class="card" style="padding: 1.2vh 1.2vw;">
+        <p class="accent big" style="font-size: 18px; margin-bottom: 0.5vh;">🔸 Round 1–2：環境與家規</p>
+        <ul style="font-size: 13.5px; gap: 0.4vh;">
+          <li><b>R1 初始化目錄</b>：[Desktop] 新設資料夾拖入 CSV ➔ 啟動對話；[CLI] 跑 venv 建立與激活指令。</li>
+          <li><b>R2 建立 CLAUDE.md</b>：打字給 Claude 建立專案家規，指定 ML Pipeline 架構與資料清洗標準。</li>
+        </ul>
+      </div>
+      <div class="card" style="padding: 1.2vh 1.2vw;">
+        <p class="accent big" style="font-size: 18px; margin-bottom: 0.5vh;">🔸 Round 3–4：計畫與特徵工程</p>
+        <ul style="font-size: 13.5px; gap: 0.4vh;">
+          <li><b>R3 Plan 模式出計畫</b>：切換至 Plan Mode，提供特徵提取與檔案架構規格，審查其邏輯。</li>
+          <li><b>R4 實作 cleaner 與 features</b>：切回一般模式，實作 <code>cleaner.py</code> 與 <code>features.py</code>，完成預處理與特徵工程。
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 12 休息 -->
+  <section class="slide center">
+    <h2>休息 10 分鐘</h2>
+    <p class="muted">10:20–10:30</p>
+  </section>
+
+  <!-- 12b 避免資料洩漏 -->
+  <section class="slide">
+    <h2><span class="kicker">機器學習致命雷區</span>嚴防資料洩漏 (Data Leakage)</h2>
+    <div class="cols" style="gap: 1.5vw;">
+      <div class="card" style="padding: 1.5vh 1.5vw; border-left: 5px solid var(--warn); background: var(--warn-soft);">
+        <p class="warn big" style="color: var(--warn); margin-bottom: 0.5vh;">[錯誤] 錯誤示範 (洩漏)</p>
+        <p style="font-size: 14px; line-height: 1.45;">對<b>整個資料集</b>（包含測試集）執行類別編碼擬合：<br>
+          <code>encoder.fit_transform(full_df)</code><br>
+          測試集的分佈特徵提前進入了訓練過程，造成評估指標分數虛高，但實測完全失靈！
+        </p>
+      </div>
+      <div class="card"
+        style="padding: 1.5vh 1.5vw; border-left: 5px solid var(--accent); background: var(--accent-soft);">
+        <p class="accent big" style="margin-bottom: 0.5vh;">[正確] 正確示範 (防禦)</p>
+        <p style="font-size: 14px; line-height: 1.45;">1. 先分割資料集為 Train 與 Test。<br>
+          2. <b>僅在訓練集擬合</b>：<code>encoder.fit(X_train)</code>。<br>
+          3. 在兩邊與未來數據<b>只調用 transform</b>：<code>encoder.transform(X_test)</code>。<br>
+          4. 保存擬合好的編碼器以供推理端加載。</p>
+      </div>
+    </div>
+    <p class="muted" style="margin-top: 1vh; font-size: 14px;">[提示] <b>Claude Code 引導提示</b>：在撰寫 features.py 時，請在 Plan
+      Mode 中明確約束 Claude「將 fit 與 transform 邏輯分離」，避免其生成帶有資料洩漏的程式碼。</p>
+  </section>
+
+  <!-- 13 概念 迭代+安全網 -->
+  <section class="slide">
+    <h2><span class="kicker">支柱 3 & 4</span>小步迭代 + 安全網</h2>
+    <div class="cols">
+      <div class="card" style="padding: 1.5vh 1.5vw;">
+        <p class="accent big">小步迭代</p>
+        <p>一次改一個功能，跑起來看對不對，再做下一個。</p>
+      </div>
+      <div class="card" style="padding: 1.5vh 1.5vw;">
+        <p class="accent big">人人都有的安全網</p>
+        <p>[Desktop]：diff 畫面點 <b>Reject</b>，還沒真的寫入。<br>[CLI]：打 <code>/undo</code> 撤銷上一步。<b>都不需要額外安裝。</b></p>
+      </div>
+    </div>
+    <table style="margin-top: 1vh; font-size: clamp(15px, 1.7vw, 22px); width: 100%;">
+      <tr>
+        <th>操作</th>
+        <th>[Desktop]</th>
+        <th>[CLI]</th>
+      </tr>
+      <tr>
+        <td>切換 Plan Mode</td>
+        <td>模式選單選 Plan</td>
+        <td><code>Shift + Tab</code></td>
+      </tr>
+      <tr>
+        <td>撤銷上次修改</td>
+        <td>diff 點 Reject</td>
+        <td><code>/undo</code></td>
+      </tr>
+      <tr>
+        <td>對話太長時壓縮</td>
+        <td colspan="2" style="text-align:center"><code>/compact</code>（兩者通用）</td>
+      </tr>
+    </table>
+    <p class="muted">[提示] 有裝 Git？等下加分挑戰可以體驗更完整的「存檔點」，不裝也沒問題。</p>
+  </section>
+
+  <!-- 14 Claude Code 防禦性開發與三步排錯法 -->
+  <section class="slide">
+    <h2><span class="kicker">重要 Precautions</span>Claude Code 防禦性開發與排錯</h2>
+    <div class="cols">
+      <div class="card" style="padding: 1.5vh 1.5vw;">
+        <p class="accent big" style="font-size: 20px;">1. 三步排錯法（人人適用）</p>
+        <p style="font-size: 14px; line-height: 1.45;">
+          ① [Desktop] diff 點 <code>Reject</code> ／ [CLI] 打 <code>/undo</code>：立刻撤銷上一次的檔案修改。<br>
+          ② 打 <code>/compact</code>：清理上下文雜訊，讓 AI 大腦保持清醒、反應變快。<br>
+          ③ 手動介入：AI 一直解不開就 [Desktop] 關閉 session ／ [CLI] 打 <code>/exit</code>，手動改完有問題的幾行，重新開始。
+        </p>
+      </div>
+      <div class="card" style="padding: 1.5vh 1.5vw;">
+        <p class="accent big" style="font-size: 20px;">2. 進階選配：Git「救生衣」</p>
+        <p style="font-size: 14px; line-height: 1.45;">AI 修改檔案速度極快，稍有不慎可能一次改壞好幾個檔案。有裝 Git 的同學，每完成一步就 commit 存檔，比
+          diff/undo 多一層完整歷史。<b>CLI 版沒裝 Git？完全不影響今天，安全網照樣夠用。</b></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 14b 進階技巧：@ 檔案引用 & 上下文管理 -->
+  <section class="slide">
+    <h2><span class="kicker">進階技巧 Advanced</span>@ 檔案引用 與 上下文管理</h2>
+    <div class="cols">
+      <div class="card">
+        <p class="accent big">📎 檔案引用 (File Reference)</p>
+        <p>在對話中打上 <b><code>@</code></b> 符號直接連結特定檔案或資料夾，將精準的程式背景餵給 AI，避免它瞎猜。</p>
+        <pre style="margin-top: 1vh;"><code>照 @cleaner.py 的風格寫 features.py</code></pre>
+      </div>
+      <div class="card">
+        <p class="accent big">🧹 上下文管理 (Context)</p>
+        <p>對話太長會導致 AI 遺忘規則或變慢。透過以下方式清理大腦：</p>
+        <ul style="padding-left: 1.2em; margin-top: 0.5vh;">
+          <li><b><code>/compact</code></b>：摘要對話歷史，釋放記憶體。</li>
+          <li><b>停損重開</b>：Desktop 開啟 <b>+ New Session</b>，CLI 輸入 <b><code>/clear</code></b> 清空。</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 15 實作③ 標題 -->
+  <section class="slide center">
+    <div class="section-num">實作 ③</div>
+    <h2>模型訓練與預測推理<span class="tag"> ｜ 實踐與存檔</span></h2>
+    <p class="muted">10:30–11:00 ｜ 撰寫訓練與預測推理腳本，並用安全網保護自己</p>
+  </section>
+
+  <!-- 15b ML 評估指標看板 -->
+  <section class="slide">
+    <h2><span class="kicker">學術評估與決策基礎</span>機器學習模型評估指標 (Regression Metrics)</h2>
+    <table style="width: 100%; border-collapse: collapse; margin-top: 1vh;">
+      <thead>
+        <tr>
+          <th style="width: 25%;">指標名稱</th>
+          <th style="width: 35%;">數學定義</th>
+          <th style="width: 40%;">物理意義與解讀</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><b>決定係數 R²</b></td>
+          <td style="font-family: monospace; font-size: 14px;">1 - (Sum(y - y_pred)²) / Sum(y - y_mean)²</td>
+          <td style="font-size: 13.5px;">模型所能解釋的目標變數變異數比例。R² 越接近 1 擬合越好；為 0 等同猜平均值；小於 0 說明過擬合嚴重或模型結構錯誤。</td>
+        </tr>
+        <tr>
+          <td><b>平均絕對誤差 MAE</b></td>
+          <td style="font-family: monospace; font-size: 14px;">Mean(|y - y_pred|)</td>
+          <td style="font-size: 13.5px;">預測值與實際值之間的平均誤差距離。單位與原數據一致（如元），不受平方放大，具備最佳商務可直覺解釋性。</td>
+        </tr>
+        <tr>
+          <td><b>均方根誤差 RMSE</b></td>
+          <td style="font-family: monospace; font-size: 14px;">sqrt(Mean((y - y_pred)²))</td>
+          <td style="font-size: 13.5px;">誤差的標準差。因為對誤差進行了平方，所以<b>對大誤差/離群值極為敏感</b>。若 RMSE 顯著高於 MAE，暗示有部分樣本預測嚴重偏離。</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="muted" style="font-size: 14px; margin-top: 1vh;">[分析] <b>殘差圖分析 (Residual Analysis)</b>：殘差 e = y_actual -
+      y_pred 的分佈應隨機且均勻地分佈在 y=0 兩側。若呈現明顯喇叭狀，代表模型在特定區間的誤差在放大，需要進一步特徵工程。</p>
+  </section>
+
+  <!-- 16 實作③ 步驟 -->
+  <section class="slide">
+    <h2><span class="kicker">實作③ 實踐與存檔</span>模型訓練與預測 — 5 輪步驟</h2>
+    <div class="cols" style="gap: 1.5vw;">
+      <div class="card" style="padding: 1.2vh 1.2vw;">
+        <p class="accent big" style="font-size: 17px; margin-bottom: 0.4vh;">🔸 R1–R3：模型訓練與指標出圖</p>
+        <ul style="font-size: 13px; gap: 0.3vh;">
+          <li><b>R1 訓練與保存</b>：實作 <code>train.py</code> 載入特徵、劃分數據並以隨機森林訓練，保存 model 與 encoder。</li>
+          <li><b>R2 交叉驗證</b>：微調 <code>train.py</code> 加入 5-fold 驗證，並與基準 Linear Regression 比較兩者表現（<b>結果可能出乎你意料</b>）。</li>
+          <li><b>R3 指標與出圖</b>：輸出 R²、MAE、RMSE，繪製並儲存特徵重要性與殘差圖 PNG。</li>
+        </ul>
+      </div>
+      <div class="card" style="padding: 1.2vh 1.2vw;">
+        <p class="accent big" style="font-size: 17px; margin-bottom: 0.4vh;">🔸 R4–R5：推理腳本與 Git 存檔</p>
+        <ul style="font-size: 13px; gap: 0.3vh;">
+          <li><b>R4 互動推理</b>：實作 <code>predict.py</code>，載入儲存的模型，透過 CLI 輸入門市與日期即時預測當日營收。</li>
+          <li><b>R5 安全網與 Git</b>：測試極端不合理 ML 要求，練習 Reject/undo，最後 git commit 存檔。</li>
+        </ul>
+      </div>
+    </div>
+    <div class="warnbox" style="margin-top: 1vh; padding: 0.8vh 1.5vw;">
+      <p style="font-size: 13.5px;">[警告] <b>環境卡住？</b> pip 安裝 scikit-learn 或執行 Python 卡住超過 3 分鐘，請果斷指示 Claude 轉為「單檔原生
+        Python 輕量迴歸管線（路線 B）」，無第三方套件依賴在終端機直接執行！</p>
+    </div>
+  </section>
+
+  <!-- 16b 互動推理流程 -->
+  <section class="slide">
+    <h2><span class="kicker">模型落地的第一步</span>互動推理程式 predict.py 的運作原理</h2>
+    <div class="cols" style="align-items: center; gap: 2vw; margin-top: 1vh;">
+      <div class="card" style="padding: 1.5vh 1.5vw;">
+        <p class="accent big" style="font-size: 18px; margin-bottom: 0.5vh;">推理核心步驟</p>
+        <ol style="font-size: 13.5px; gap: 0.8vh; padding-left: 1.2em;">
+          <li><b>加載模型檔案</b>：<code>joblib.load('model.joblib')</code> 與 <code>joblib.load('encoder.joblib')</code></li>
+          <li><b>採集互動數據</b>：透過 Python <code>input()</code> 詢問<b>門市與日期</b>（坪數、座位數、店型從 stores.csv 查表帶入，不用使用者輸入）。</li>
+          <li><b>特徵轉換對齊</b>：將輸入數據轉為 1 列的 DataFrame，送入載入的特徵處理器，確保特徵欄位順序與編碼跟訓練集完全一致。</li>
+          <li><b>執行 Predict 預測</b>：模型運算並輸出這間店這天的預測營收。</li>
+        </ol>
+      </div>
+      <div class="card" style="padding: 1.5vh 1.5vw;">
+        <p class="accent big" style="font-size: 18px; margin-bottom: 0.5vh;">為何要獨立出推理檔案？</p>
+        <p style="font-size: 13px; line-height: 1.45;">
+          訓練 (train.py) 與預測 (predict.py) 是兩個<b>生命週期不同</b>的階段。<br><br>
+          在實際生產環境中，模型往往是在伺服器上訓練好，然後打包發佈。預測端（可能是網頁、手機 APP 或 CLI 工具）只需要載入靜態的模型權重，並不需要重新讀取歷史 CSV 數據或重跑一次模型訓練流程。
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 15 兩條路線 -->
+  <section class="slide">
+    <h2><span class="kicker">實作③</span>環境卡住？切路線 B</h2>
+    <div class="cols">
+      <div class="card">
+        <p class="accent big">路線 A：Scikit-learn 管線</p>
+        <p>資料科學界標準。利用 Pandas、Scikit-learn 進行正規前處理與模型訓練。</p>
+      </div>
+      <div class="card">
+        <p class="accent big">路線 B：原生 Python 管線</p>
+        <p>本地套件衝突時切這條：請 Claude 寫一個只依賴 math/numpy 的簡單梯度下降或手寫矩陣求逆線性迴歸，並提供 CLI 預測。</p>
+      </div>
+    </div>
+    <p class="muted">環境 debug 超過 3 分鐘 → 別戀戰，立刻請 Claude 轉路線 B。</p>
+  </section>
+
+  <!-- 15b 加分挑戰 -->
+  <section class="slide">
+    <h2><span class="kicker">先做完的組</span>加分挑戰（以下皆選配）</h2>
+    <ul>
+      <li>繪製學習曲線 (Learning Curve) 與保存至圖片</li>
+      <li>嘗試引入其他 ML 演算法進行評估（如 Ridge 或 DecisionTreeRegressor）</li>
+      <li>請 Claude 撰寫一份專案的 README.md，包含訓練報告與指標說明</li>
+      <li><b>進階｜虛擬環境</b>：在 CLAUDE.md 中編寫專屬 pip 安裝指令 SOP，體現最佳開發實踐</li>
+      <li><b>進階｜Git</b>：有裝 Git 的話，請它初始化版本控制，每完成一步 commit 一次</li>
+    </ul>
+    <p class="muted">沒裝 Git 也沒關係 — <code>/undo</code> 今天全程夠用。</p>
+  </section>
+
+  <!-- 15c 進階挑戰軌（舊生分流，低調預告；完整內容走講義） -->
+  <section class="slide">
+    <h2><span class="kicker">覺得太簡單？</span>🚀 進階挑戰軌（有基礎的同學自選）</h2>
+    <div class="cols">
+      <div class="card">
+        <p class="accent big">題目：冷萃咖啡夏季需求預測</p>
+        <p>同一份資料、同一套技能，換成<b>季節主導</b>的目標。核心軌做完 ①② 就能隨時切過來平行進行，成果拿去 Hackathon 發表。</p>
+        <p class="muted">完整步驟與答案在講義「🚀 進階挑戰軌」。</p>
+      </div>
+      <div class="card">
+        <p class="accent big">會撞到的資深一課</p>
+        <p><b>隨機切分</b>：隨機森林 R²≈0.66，最強。<br><b>時間切分（預測未來）</b>：同一個 RF 崩到 R²≈−1.50。</p>
+        <p>樹模型<b>無法外推</b>沒看過的夏季高峰 → 那個高分是「偷看未來」的假象，跟早上的資料洩漏同源。</p>
+      </div>
+    </div>
+    <p class="muted">這是給跑得快的人的自選挑戰，全班照核心軌走即可、不強推。</p>
+  </section>
+
+  <!-- 16 實作④ 標題 -->
+  <section class="slide center">
+    <div class="section-num">實作 ④</div>
+    <h2>Mini Hackathon<span class="tag"> ｜ 開放題</span></h2>
+    <p class="muted">11:00–11:40 ｜ 自訂題目，獨立走完整流程</p>
+  </section>
+
+  <!-- 17 規則+節點 -->
+  <section class="slide">
+    <h2><span class="kicker">實作④</span>40 分鐘做出能 Demo 的東西</h2>
+    <div class="flow">
+      <div class="fstep">定題 5'</div>
+      <div class="arr">→</div>
+      <div class="fstep">Plan 10'</div>
+      <div class="arr">→</div>
+      <div class="fstep">實作 20'</div>
+      <div class="arr">→</div>
+      <div class="fstep">收尾 5'</div>
+    </div>
+    <p><b>流程照舊</b>：資料夾 → CLAUDE.md → Plan Mode → 小步迭代（安全網救急）</p>
+    <div class="warnbox">
+      <p>🎯 <b>優先用你昨天填的題目！</b>看看「靈感牆」有沒有你的。<b>題目寧小勿大</b> — 開工前先回答：「20 分鐘後你要 demo 什麼模型的預測數值與評估圖表？」答不出來就砍小。</p>
+    </div>
+  </section>
+
+  <!-- 18 備選題 -->
+  <section class="slide">
+    <h2><span class="kicker">沒靈感？</span>備選題目（或用昨天表單的題目）</h2>
+    <div class="cols">
+      <ul>
+        <li>論文引用次數預測器 (Regression)</li>
+        <li>學生成績與表現預測器 (Regression/Classification)</li>
+        <li>門市客群流失預測器 (Churn Classifier)</li>
+      </ul>
+      <ul>
+        <li>二手筆電/手機價格估值器</li>
+        <li>每日通勤時間預測器</li>
+        <li>學術會議論文錄取機率預估</li>
+      </ul>
+    </div>
+    <p class="muted">昨天在表單發想的題目，現在就是拿來用的時候。</p>
+  </section>
+
+  <!-- 19 發表+追問 -->
+  <section class="slide">
+    <h2><span class="kicker">發表</span>自願上台 2 分鐘 + 最後追問</h2>
+    <p class="muted">想分享的人來就好 — 不強制、不點名。</p>
+    <ol>
+      <li><b>Demo 能動</b>（最重要）</li>
+      <li>一句話：解決什麼問題</li>
+      <li>分享一個「AI 出乎意料」的時刻 — 很神或很雷都行</li>
+    </ol>
+    <p>🔍 <b>追問檢查點</b>：填完講義最後兩個「為什麼」。兩天了，該成為習慣。</p>
+  </section>
+
+  <!-- 20 進階地圖 -->
+  <section class="slide">
+    <h2><span class="kicker">進階地圖</span>下一步往哪走</h2>
+    <table>
+      <tr>
+        <th>主題</th>
+        <th>一句話</th>
+      </tr>
+      <tr>
+        <td><b>Skills</b></td>
+        <td>教 Claude 你的專屬 SOP（例：系上報告格式）</td>
+      </tr>
+      <tr>
+        <td><b>MCP</b></td>
+        <td>讓它連資料庫、Slack 等外部服務</td>
+      </tr>
+      <tr>
+        <td><b>Subagents</b></td>
+        <td>大任務拆給多個 Claude 分工</td>
+      </tr>
+      <tr>
+        <td><b>部署</b></td>
+        <td>GitHub Pages／Streamlit Cloud，作品上線</td>
+      </tr>
+    </table>
+    <p class="muted">講義最後一頁有自學路線與資源清單。</p>
+  </section>
+
+  <!-- 21 MCP 外部連接器概念 -->
+  <section class="slide">
+    <h2><span class="kicker">進階觀念</span>MCP 外部連接器是什麼？</h2>
+    <div class="card">
+      <p class="big"><b>Model Context Protocol (MCP)</b>：就像為 AI 接上 <span class="accent">「USB 擴充插槽」</span>。</p>
+    </div>
+    <div class="cols" style="gap: 1.5vw; margin-top: 1vh;">
+      <div class="card" style="padding: 1.5vh 1.5vw;">
+        <p class="accent big" style="font-size: 20px;">讓 AI 真正連接現實世界</p>
+        <ul style="font-size: 14px; gap: 0.5vh; padding-left: 1.2em;">
+          <li><b>預設限制</b>：AI 只能讀取本機上的文字與檔案，無法與外部互動。</li>
+          <li><b>MCP 賦能</b>：透過統一的協定插槽，AI 可以直接<b>連接 SQL 資料庫、存取 Google Drive 雲端檔案、搜尋網頁，甚至發送 Slack 通知與 Gmail 郵件</b>！</li>
+        </ul>
+      </div>
+      <div class="card" style="padding: 1.5vh 1.5vw;">
+        <p class="accent big" style="font-size: 20px;">如何使用它？</p>
+        <ul style="font-size: 14px; gap: 0.5vh; padding-left: 1.2em;">
+          <li><b>Claude Code 內建 MCP 客戶端</b>。🖥️ Desktop：點 <b>+</b> 選 <b>Connectors</b>，圖形化設定。⌨️ CLI：終端機輸入
+            <code>claude mcp add ...</code></li>
+          <li>例如，若要讓 Claude Code 能隨時上網查最新套件文件，可以連接 Brave Search / Google Search 這類 MCP 服務。</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 21 結語 -->
+  <section class="slide center">
+    <h2>兩天結束 🎓</h2>
+    <p class="big">工具會一直換。<br><span class="accent">「描述、驗證、迭代」的能力不會過時。</span></p>
+    <p class="muted">把這兩天的專案資料夾留著 — 那是你的第一個 vibe coding 作品集。</p>
+  </section>
+
+  <div class="mobile-nav">
+    <button id="prev-btn">◀</button>
+    <button id="next-btn">▶</button>
+  </div>
+
+  <script>
+    const slides = [...document.querySelectorAll('.slide')];
+    let i = Math.min(parseInt(location.hash.slice(1)) || 0, slides.length - 1);
+    const progress = document.getElementById('progress');
+    const counter = document.getElementById('counter');
+    function show(n) {
+      i = Math.max(0, Math.min(n, slides.length - 1));
+      slides.forEach((s, k) => s.classList.toggle('active', k === i));
+      progress.style.width = ((i + 1) / slides.length * 100) + '%';
+      counter.textContent = (i + 1) + ' / ' + slides.length;
+      location.hash = i;
+    }
+    addEventListener('keydown', e => {
+      if (['ArrowRight', ' ', 'PageDown'].includes(e.key)) { e.preventDefault(); show(i + 1); }
+      else if (['ArrowLeft', 'PageUp'].includes(e.key)) { e.preventDefault(); show(i - 1); }
+      else if (e.key === 'Home') show(0);
+      else if (e.key === 'End') show(slides.length - 1);
+      else if (e.key.toLowerCase() === 'f') {
+        document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen();
+      }
+    });
+    addEventListener('click', e => {
+      // 僅在桌面版寬螢幕啟用點擊兩側翻頁，避免手機版點選或滑動時誤觸
+      if (innerWidth > 768) {
+        if (e.clientX > innerWidth * 2 / 3) show(i + 1);
+        else if (e.clientX < innerWidth / 3) show(i - 1);
+      }
+    });
+
+    // 行動端懸浮按鈕導覽
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    if (prevBtn) prevBtn.addEventListener('click', () => show(i - 1));
+    if (nextBtn) nextBtn.addEventListener('click', () => show(i + 1));
+
+    show(i);
+  </script>
+</body>
+
+</html>
