@@ -112,8 +112,8 @@
         <li><strong>檔案引用（@ 符號）</strong>：在對話框中打上 <strong><code>@</code></strong> 即可選取並引用特定的檔案或資料夾。這能將你希望 AI
           參考的特定文件或程式碼上下文直接餵給它，例如：<em>「參考 <code>@cleaner.py</code> 的清理風格來撰寫 <code>features.py</code>」</em>。</li>
         <li><strong>小步迭代</strong>：一次只做一個小功能，執行確認無誤後，再做下一個。</li>
-        <li><strong>安全網</strong>：Desktop 的 diff 畫面點 <strong>Reject</strong>，或 CLI 的 <code>/undo</code>。可隨時撤銷 AI
-          上一次的檔案變更。</li>
+        <li><strong>安全網</strong>：Desktop 會自動套用修改，看不順眼直接跟 Claude 說「改回去」，或用 Git 復原到上一個存檔點；CLI 則可隨時輸入
+          <code>/undo</code> 撤銷 AI 上一次的檔案變更。</li>
         <li><strong>上下文管理（防 AI 混亂）</strong>：當對話變長，AI 會開始變慢或產生幻覺。此時可打 <strong><code>/compact</code></strong>
           壓縮並摘要歷史對話，或直接<strong>「停損重開」</strong>（Desktop 開啟 <strong>+ New Session</strong>，CLI 輸入 <code>/clear</code>
           或重啟），保持 AI 大腦清醒。</li>
@@ -139,12 +139,12 @@
           </tr>
           <tr>
             <td>同意變更</td>
-            <td>看 diff → 點 <strong>Accept</strong></td>
+            <td>自動套用，無需確認</td>
             <td>輸入 <code>y</code> 或 <code>Yes</code></td>
           </tr>
           <tr>
             <td>撤銷上一步修改</td>
-            <td>diff 畫面點 <strong>Reject</strong></td>
+            <td>跟 Claude 說「改回去」，或用 Git 復原</td>
             <td>輸入 <code>/undo</code></td>
           </tr>
           <tr>
@@ -472,7 +472,7 @@
             </p>
             <p>2. 在對話框輸入第一個指令以初始化 Git 倉庫：</p>
             <pre class="prompt"><code>請幫我在此資料夾初始化 git 倉庫。</code></pre>
-            <p>對話完後，點選右側的 <strong>Accept</strong> 或點擊授權提示（Allow）予以執行。</p>
+            <p>對話完後，點擊授權提示（Allow）予以執行。</p>
           </div>
           <div class="track cli">
             <span class="track-label">⌨️ CLI</span>
@@ -497,18 +497,18 @@ claude</code></pre>
       <div class="step">
         <div class="step-num">3</div>
         <div class="step-body">
-          <h3>看懂並核准變更</h3>
+          <h3>看懂變更</h3>
           <div class="track desktop">
             <span class="track-label">🖥️ Desktop App</span>
-            <p>右側會出現綠色的程式碼 <strong>diff</strong>（綠色表示全新新增的行數）。確認內容後，點 <strong>Accept</strong>。</p>
+            <p>Claude 會直接建立檔案並寫入，不會停下來要你確認。</p>
           </div>
           <div class="track cli">
             <span class="track-label">⌨️ CLI</span>
             <p>終端機會以 <code>git diff</code> 格式顯示程式碼變更（綠色開頭表示新增），並詢問是否允許建立檔案，輸入 <code>y</code>。</p>
           </div>
           <div class="callout warn">
-            <span class="callout-label">⚠️ 不要一路按到底</span>
-            <p>養成習慣：<strong>先讀一遍它要改什麼，再按同意</strong>。這是今天最重要的肌肉記憶。</p>
+            <span class="callout-label">⚠️ 不要看都不看就往下做</span>
+            <p>養成習慣：<strong>檔案寫好後，花點時間打開來看一遍內容</strong>（Desktop 是自動寫入的，更需要事後檢查；CLI 記得先讀懂 diff 再按 y）。這是今天最重要的肌肉記憶。</p>
           </div>
         </div>
       </div>
@@ -521,8 +521,8 @@ claude</code></pre>
           <div class="expect">🎉 <b>看到檔案真的在硬碟裡的那一刻</b>，你就跨過門檻了——這跟昨天的預覽視窗完全不一樣。</div>
           <div class="callout rescue" style="margin-top: 10px; padding: 10px 14px;">
             <span class="callout-label">🆘 沒看到檔案？</span>
-            <p>請確認在 Step 3 時，你確實點擊了 <strong>Accept</strong> 或點選了允許寫入檔案的授權提示（Allow）。如果點到了 Reject
-              或是拒絕，檔案就不會寫入電腦。此外，請確認打開的資料夾與在 Claude Desktop App 中選擇的 <code>hello-claude</code> 資料夾路徑完全一致。</p>
+            <p>CLI 的話，請確認在 Step 3 時輸入了 <code>y</code> 允許建立檔案；如果拒絕了，檔案就不會寫入電腦。此外，請確認打開的資料夾與 Claude Desktop App／終端機所在的
+              <code>hello-claude</code> 資料夾路徑完全一致。</p>
           </div>
         </div>
       </div>
@@ -530,13 +530,13 @@ claude</code></pre>
       <div class="step">
         <div class="step-num">5</div>
         <div class="step-body">
-          <h3>修改程式以體驗紅綠 diff 畫面</h3>
-          <p>既然 <code>hello.py</code> 已經存在於 Git 倉庫中，我們現在對它進行修改，便能觸發 diff 比較畫面。請輸入指令：</p>
+          <h3>修改既有程式</h3>
+          <p>既然 <code>hello.py</code> 已經存在於 Git 倉庫中，我們現在對它進行修改。請輸入指令：</p>
           <pre class="prompt"><code>請修改 hello.py：在輸出的 'Hello, Claude Code!' 下方，增加輸出目前的日期與時間。</code></pre>
           <div class="track-pair">
             <div class="track desktop">
               <span class="track-label">🖥️ Desktop App</span>
-              <p>右側會出現紅綠對照的 <strong>diff</strong> 視窗（綠色表示新增，紅色表示刪除）。看懂後，點 <strong>Accept</strong>。</p>
+              <p>Claude 會直接修改並儲存 <code>hello.py</code>，不會停下來要你確認。想事後看差異，可以請 Claude「顯示這次改了什麼（git diff）」。</p>
             </div>
             <div class="track cli">
               <span class="track-label">⌨️ CLI</span>
@@ -631,7 +631,7 @@ claude</code></pre>
 【開發規範】
 - 程式碼內部需加上詳細的繁體中文註解說明。
 - 防禦性開發：一次僅寫完一個檔案或功能，向我確認無誤後，再前進下一步。</code></pre>
-      <p class="muted small">看懂變更後，點 <strong>Accept</strong>（Desktop）或輸入 <code>y</code>（CLI）寫入檔案。</p>
+      <p class="muted small">Desktop 會自動寫入檔案；CLI 看懂變更後輸入 <code>y</code> 寫入檔案。</p>
 
       <h3>🔸 Round 3 — Plan Mode 設計架構</h3>
 
@@ -673,8 +673,7 @@ claude</code></pre>
       </div>
 
       <h3>🔸 Round 4 — 實作 cleaner.py 與 features.py</h3>
-      <p>切回<strong>互動模式</strong>（Desktop 改選 <strong>Manual</strong> 或 <strong>Accept edits</strong>；CLI 亦同，可按
-        <code>Shift + Tab</code> 切換），開始寫程式：
+      <p>切回<strong>互動模式</strong>（Desktop 從模式選單切回一般對話模式；CLI 可按 <code>Shift + Tab</code> 切換），開始寫程式：
       </p>
       <pre class="prompt"><code>我同意你的計畫，請幫我實作 cleaner.py 與 features.py，然後執行一次確認清理報告與聚合後的筆數。</code></pre>
 
@@ -702,7 +701,7 @@ claude</code></pre>
       </div>
       <div class="callout warn">
         <span class="callout-label">⚠️ 安全網：防禦性開發</span>
-        <p>訓練模型時，AI 經常會為了「優化」而引入過於複雜的套件或動到你的特徵。Desktop 每次修改都會先變成 diff 讓你看，<strong>看不順眼直接 Reject</strong>，還沒真的寫入檔案；CLI 打
+        <p>訓練模型時，AI 經常會為了「優化」而引入過於複雜的套件或動到你的特徵。看不順眼就跟 Claude 說「改回去」，或 CLI 打
           <code>/undo</code> 撤銷。訓練出好的基準模型後就 <code>git commit</code> 存檔，後續改壞了隨時退回。
         </p>
       </div>
@@ -751,9 +750,9 @@ claude</code></pre>
       <div class="expect">💡 執行 <code>python3 predict.py</code>，輸入你最愛的門市（例如台北中山店）與明天日期，看看它能吐出多少營收。</div>
 
       <h3>🔸 Round 5 — 安全網測試與 Git 存檔</h3>
-      <p>測試極端不合理 ML 要求，練習 Reject/undo，最後 git commit 存檔：</p>
+      <p>測試極端不合理 ML 要求，練習撤銷修改，最後 git commit 存檔：</p>
       <pre class="prompt"><code>請在預測時，若輸入的月份是 12 月，就把預測營收乘以 100 倍。</code></pre>
-      <p>這是一個非常不合理的需求（硬寫規則）。我們可以體驗 diff 畫面，然後選擇 <strong>Reject</strong> (Desktop) 或輸入 <code>/undo</code> (CLI) 撤銷修改。</p>
+      <p>這是一個非常不合理的需求（硬寫規則）。跟 Claude 說「改回去」(Desktop) 或輸入 <code>/undo</code> (CLI) 撤銷修改。</p>
       <p>確認安全網正常後，請 Claude 協助初始化倉庫並做第一次提交：</p>
       <pre
         class="prompt"><code>很好，系統一切正常。請幫我初始化 git 倉庫（如果還沒的話），並進行一次 commit，訊息寫 'feat: add daily revenue prediction pipeline'。</code></pre>
@@ -982,6 +981,57 @@ print(f"{date}（週{weekday}）預測營收：{pred:,.0f} 元")</code></pre>
         <p>核心流程走過一輪了，換你自己的題目上場——可以是 Day 1 自由活動填的「題目發想表單」裡的想法，也可以是你研究或生活裡真的想解決的問題。挑一個貼近自己領域的題目，做出來才有感覺，發表時也才有故事可講。</p>
       </div>
 
+      <h3 style="margin-top: 1.6rem;">💡 靈感牆：看看同學們想做什麼</h3>
+      <p>下面這些是 Day 1「題目發想表單」裡同學提出的點子，整理出來給你參考——<strong>不一定要照做</strong>，看到喜歡的就拿去改成自己的版本，或純粹當作「原來這也能做」的靈感。右下角標籤是難易度參考：<strong>入門</strong>大多是單檔網頁、30 分鐘做得出雛形；<strong>挑戰</strong>則建議先用 Plan Mode 把範圍縮小到一個核心功能再動手。</p>
+
+      <div class="card-grid">
+        <div class="card">
+          <h3>🌙 睡眠時鐘圓盤</h3>
+          <p>輸入入睡與起床時間，24 小時圓盤自動用色塊標出睡眠區間，一眼看出睡眠占了一天多少比例。</p>
+          <div class="card-meta"><span class="tag">前端視覺化</span><span class="tag">入門</span></div>
+        </div>
+        <div class="card">
+          <h3>💪 健身 TDEE 追蹤器</h3>
+          <p>輸入身高體重自動算出增肌減脂熱量目標，每天的飲食與體重自動存檔，畫成體重與熱量折線圖。</p>
+          <div class="card-meta"><span class="tag">前端+圖表</span><span class="tag">入門</span></div>
+        </div>
+        <div class="card">
+          <h3>⏱ 考試倒數計時器</h3>
+          <p>輸入目標日期與事件名稱，即時倒數天／時／分／秒，可同時追蹤多個項目，時間快到就變色提醒。</p>
+          <div class="card-meta"><span class="tag">前端小工具</span><span class="tag">入門</span></div>
+        </div>
+        <div class="card">
+          <h3>📄 康乃爾筆記產生器</h3>
+          <p>貼上課程、書籍或文章內容，自動整理成康乃爾筆記幫助抓重點，生成後可自行修改並匯出 PDF。</p>
+          <div class="card-meta"><span class="tag">文件處理</span><span class="tag">進階</span></div>
+        </div>
+        <div class="card">
+          <h3>📊 文獻重點整理成表格</h3>
+          <p>把複雜的文獻資料整理成淺顯易懂的重點、在原文標出關鍵詞，並轉成 Excel 表格方便比對。</p>
+          <div class="card-meta"><span class="tag">文件處理</span><span class="tag">進階</span></div>
+        </div>
+        <div class="card">
+          <h3>🧠 流程心智圖</h3>
+          <p>把作業流程（例如專利申請）畫成心智圖，每個節點掛上對應的操作手冊，依流程位置找到該看哪一份。</p>
+          <div class="card-meta"><span class="tag">資訊視覺化</span><span class="tag">進階</span></div>
+        </div>
+        <div class="card">
+          <h3>📈 台股／美股量化評分</h3>
+          <p>輸入股票代號，自動抓歷史資料畫多週期 K 線、整理財務指標，綜合算出 0～10 分的參考分數。</p>
+          <div class="card-meta"><span class="tag">資料分析</span><span class="tag">挑戰</span></div>
+        </div>
+        <div class="card">
+          <h3>🗣 語言學習複習排程</h3>
+          <p>依考試日期與自己的弱點，排出聽說讀寫的複習時程，搭配主題式單字卡、錯題紀錄與模擬測驗。</p>
+          <div class="card-meta"><span class="tag">個人化工具</span><span class="tag">挑戰</span></div>
+        </div>
+        <div class="card">
+          <h3>🎙 表格語音填寫助手</h3>
+          <p>把原本手寫的表格變成線上填寫網頁，會議或訪談的錄音自動轉成摘要，再填回對應欄位。</p>
+          <div class="card-meta"><span class="tag">自動化</span><span class="tag">挑戰</span></div>
+        </div>
+      </div>
+
       <div class="callout tip">
         <span class="callout-label">💡 上下文管理：換題目了，先開一個新對話</span>
         <p>接下來是全新的專案，跟剛剛的 cleaner.py／train.py 完全無關。<strong>不要接著上一個對話往下講——開一個新 session</strong>（Desktop 開新分頁；CLI 打 <code>/clear</code> 或直接重啟）。這是 Day 1「鬼打牆就開新對話」的進階版：對話拉太長，AI 容易把前一個任務的規則、變數名稱一起帶進來搞混，甚至變慢。<code>CLAUDE.md</code> 每次啟動都會重新讀取，開新對話不會弄丟你訂的家規，放心重開。</p>
@@ -992,8 +1042,8 @@ print(f"{date}（週{weekday}）預測營收：{pred:,.0f} 元")</code></pre>
         <li><strong>建議專案結構</strong>：每個模板附的檔案樹，是做完後大概長的樣子，不用自己一個一個手動建檔。你只要先建好一個空資料夾、啟動 Claude，跟著後面走，這些檔案
             Claude 會幫你陸續建出來；這張圖是給你「對照有沒有漏東西」用的。</li>
           <li><strong>起手 CLAUDE.md</strong>：建好資料夾、啟動 Claude 後（Desktop 點 <strong>Select folder</strong>／CLI 跑
-            <code>mkdir → cd → claude</code>），把這段內容<strong>貼給 Claude，開頭加一句「請幫我建立 CLAUDE.md，內容如下：」</strong>，看懂 diff 後點
-            <strong>Accept</strong>（Desktop）或輸入 <code>y</code>（CLI）。這跟<a href="#lab2">實作② Round 2</a>
+            <code>mkdir → cd → claude</code>），把這段內容<strong>貼給 Claude，開頭加一句「請幫我建立 CLAUDE.md，內容如下：」</strong>，Desktop 會直接寫入，CLI 看懂變更後輸入
+            <code>y</code>。這跟<a href="#lab2">實作② Round 2</a>
             建家規是一模一樣的動作，照著改成你自己的題目即可。</li>
           <li><strong>第一步 Plan Mode 提示詞</strong>：切到 <strong>Plan Mode</strong>（Desktop 從輸入框旁選單選 Plan／CLI 按
             <code>Shift + Tab</code>）再把這段貼給它，讓它<strong>先出計畫、先不要動檔案</strong>；讀完覺得計畫合理，再切回互動模式請它開始寫。</li>
@@ -1010,7 +1060,7 @@ print(f"{date}（週{weekday}）預測營收：{pred:,.0f} 元")</code></pre>
 ├── train.py           # 模型訓練與評估 (包含導出 model.joblib)
 └── predict.py         # CLI 互動式預測推理</code></pre>
 
-      <p><strong>起手 CLAUDE.md</strong>（開頭加「請幫我建立 CLAUDE.md，內容如下：」貼給 Claude，再 Accept）：</p>
+      <p><strong>起手 CLAUDE.md</strong>（開頭加「請幫我建立 CLAUDE.md，內容如下：」貼給 Claude；Desktop 會自動寫入，CLI 輸入 y）：</p>
       <pre><code>- 本專案使用 Python, Pandas 與 scikit-learn 建立一個機器學習數據預測/分析管線。
 - 專案檔案架構應包含：
   - cleaner.py：資料清理與多來源數據合併
@@ -1037,7 +1087,7 @@ print(f"{date}（週{weekday}）預測營收：{pred:,.0f} 元")</code></pre>
 ├── excel_exporter.py  # 格式化輸出為 Excel (.xlsx)
 └── app.py             # 核心 CLI 流程控制</code></pre>
 
-      <p><strong>起手 CLAUDE.md</strong>（開頭加「請幫我建立 CLAUDE.md，內容如下：」貼給 Claude，再 Accept）：</p>
+      <p><strong>起手 CLAUDE.md</strong>（開頭加「請幫我建立 CLAUDE.md，內容如下：」貼給 Claude；Desktop 會自動寫入，CLI 輸入 y）：</p>
       <pre><code>- 本專案使用 Python 串接大語言模型 (LLM) API 來自動化分析與整理文獻資料，並導出結構化數據。
 - 主要使用套件：pandas, openpyxl, google-genai (或其他 LLM SDK)
 - 專案結構包含：
@@ -1061,7 +1111,7 @@ print(f"{date}（週{weekday}）預測營收：{pred:,.0f} 元")</code></pre>
 ├── style.css          # 樣式定義
 └── app.js             # 計時邏輯/圓盤繪製邏輯</code></pre>
 
-      <p><strong>起手 CLAUDE.md</strong>（開頭加「請幫我建立 CLAUDE.md，內容如下：」貼給 Claude，再 Accept）：</p>
+      <p><strong>起手 CLAUDE.md</strong>（開頭加「請幫我建立 CLAUDE.md，內容如下：」貼給 Claude；Desktop 會自動寫入，CLI 輸入 y）：</p>
       <pre><code>- 本專案使用 HTML5、Vanilla CSS 與 JavaScript 建立一個免安裝、離線可執行的單頁 Web 工具。
 - 不使用任何外部 npm 套件或複雜打包工具，保持零依賴（Zero-Dependency）。
 - 專案架構：
